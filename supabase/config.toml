@@ -1,0 +1,7 @@
+# Minimal config so the CLI can find this project. Everything else is left at
+# the CLI's defaults deliberately — this repo does not run a local Supabase
+# stack, it applies migrations to the hosted project.
+#
+#   npx supabase link --project-ref yhirpgneziptdgrdfjzb
+#   npx supabase db push
+project_id = "acm-committee"

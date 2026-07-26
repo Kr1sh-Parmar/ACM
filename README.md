@@ -56,15 +56,20 @@ later admin is promoted from **Admin → Members** in the UI.
 
 ## Schema
 
-The database is the source of truth for access control, not the app. Migrations
-live in the Supabase project's history; pull them into this repo with:
+The database is the source of truth for access control, not the app. All
+migrations are tracked in `supabase/migrations/`, in the order they were
+applied. To apply them to a fresh project:
 
 ```bash
 npx supabase link --project-ref <project-ref>
-npx supabase db pull
+npx supabase db push
 ```
 
-Worth doing early — right now the schema exists only in the hosted project.
+Each file is named `<timestamp>_<name>.sql` and matches the hosted project's
+migration history exactly. Two of them exist only to fix an earlier one
+(`fix_join_request_status_cast`, `upcoming_birthdays_without_photo_url`) —
+they are kept rather than squashed, because the history is the record of what
+the live database actually ran.
 
 ### The rules that live in Postgres
 
