@@ -71,7 +71,9 @@ Consequences of deriving rather than storing:
 
 **pgcrypto gotcha:** Supabase ships pgcrypto but installs it into the `extensions`
 schema, so `hmac` must be called as `extensions.hmac` — an unqualified call fails
-under `search_path = ''`. Verify the extension is enabled before writing the migration.
+under `search_path = ''`. Confirmed installed (v1.3) in the hosted project, and the
+expression above was run against it: consecutive minute windows produce distinct
+six-digit codes.
 
 ### The QR encodes a URL, not a payload
 
@@ -123,9 +125,16 @@ Reads `member_contributions` plus existing tables. No new storage.
 - Team formation: teams per event, average fill rate
 - CSV export for IIC/faculty reports
 
-Charts use shadcn's own chart component (recharts) — the one new dependency in this
-spec. CSV export goes through a single `toCsv()` helper in `src/lib/`; Phase 4C
-reuses it rather than growing a second exporter.
+Charts are **CSS bars, not a charting library**. Every metric listed above is a bar
+or a single number, and a bar is a `<span>` with a percentage width — pulling in
+~500 KB of recharts to draw rectangles fails the "native platform feature covers it"
+test. Add one when a genuine time series appears, not before.
+
+CSV export goes through a single `toCsv()` helper in `src/lib/`; Phase 4C reuses it
+rather than growing a second exporter.
+
+The one new dependency in this phase is `qrcode`, for generating the projected code.
+That one cannot be done in CSS.
 
 ### Routes
 
@@ -281,11 +290,12 @@ database rather than the UI, because the database is what enforces these rules.
 
 | File | Asserts |
 |---|---|
-| `05_attendance.sql` | Stale code rejected; current code accepted; repeat check-in is idempotent; a member cannot mark someone else present; admin override lands and is attributed |
-| `06_showcase_public.sql` | **`anon` reads published projects and nothing else** — zero rows from `profiles`, `events`, `teams`, `member_skills`; draft and submitted projects invisible; the contributor view leaks no column beyond name/photo/designation |
-| `07_recruitment.sql` | Applicants read only their own application; reviewer notes are staff-only; slot double-booking rejected; a closed cycle accepts nothing |
+| `05_attendance.sql` | Stale code rejected; current code accepted; repeat check-in is idempotent; direct table writes refused for everyone; a member cannot mark someone else present; admin override lands, is attributed, and is reversible |
+| `06_contributions.sql` | Points arithmetic matches the weights; weights are admin-only; deleting an event unwinds the points it granted |
+| `07_showcase_public.sql` | **`anon` reads published projects and nothing else** — zero rows from `profiles`, `events`, `teams`, `member_skills`; draft and submitted projects invisible; the contributor view leaks no column beyond name/photo/designation |
+| `08_recruitment.sql` | Applicants read only their own application; reviewer notes are staff-only; slot double-booking rejected; a closed cycle accepts nothing |
 
-`06` is the one that matters most, and it should assert on **specific** error text and
+`07` is the one that matters most, and it should assert on **specific** error text and
 row counts. A bare "it returned nothing" assertion can pass for the wrong reason —
 that is exactly how the enum-cast bug in `respond_to_join_request` hid through an
 entire test run in Phase 2.
@@ -312,7 +322,13 @@ All are additive. None require changing the schema above.
 
 ## Open Items
 
-- Confirm pgcrypto is enabled and note its schema before writing the 4A migration.
+- ~~Confirm pgcrypto is enabled~~ — resolved: installed, `extensions` schema, HMAC
+  expression verified against the live database.
 - Chapter-specific lists (branches, designations) are still placeholders in
-  `src/lib/constants.ts`; contribution weight defaults will seed alongside them and
-  need the same review.
+  `src/lib/constants.ts`. Contribution weights seed at 10/15/25/40 for
+  attend/join/lead/host and need the same review once the chapter decides what it
+  actually wants to reward.
+- **Migrations must be pulled into the repo before any 4A migration is written.**
+  The 13 existing migrations live only in the hosted project, so migrations 14 and 15
+  would land with nothing to review them against and no rollback. Promoted out of 4D
+  into Task 1 of the 4A plan.
