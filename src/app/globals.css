@@ -1,26 +1,235 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Dark mode follows the operating system. No theme library, no flash-of-wrong-theme
+   hydration dance — the browser already knows what the reader wants. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
+
+/* ============================================================
+   ACM chapter design tokens
+
+   Blue is the chapter's colour, so it carries structure, not just
+   accents. Jasmine is the warm counterweight that keeps a page of
+   approval queues and data tables from reading as a bank dashboard.
+   ============================================================ */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --acm-50: #eaf3fc;
+  --acm-100: #d0e4f9;
+  --acm-200: #a3c9f2;
+  --acm-300: #6fa8e8;
+  --acm-400: #3d87dc;
+  --acm-500: #0066cc; /* primary */
+  --acm-600: #0057ae;
+  --acm-700: #1b4f9c; /* deep — headings, dark surfaces */
+  --acm-800: #133a73;
+  --acm-900: #0b2549;
+
+  --jasmine: #f8e7a1;
+  --jasmine-soft: #fdf6dc;
+  --jasmine-deep: #e3c85f;
+
+  --signal: #00b8d9; /* cyan — CTAs and live state only */
+
+  --ink: #0b1b2b; /* near-black with a blue cast, never #000 */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+
+  /* Brand scale, available as bg-acm-500, text-acm-700, etc. */
+  --color-acm-50: var(--acm-50);
+  --color-acm-100: var(--acm-100);
+  --color-acm-200: var(--acm-200);
+  --color-acm-300: var(--acm-300);
+  --color-acm-400: var(--acm-400);
+  --color-acm-500: var(--acm-500);
+  --color-acm-600: var(--acm-600);
+  --color-acm-700: var(--acm-700);
+  --color-acm-800: var(--acm-800);
+  --color-acm-900: var(--acm-900);
+  --color-jasmine: var(--jasmine);
+  --color-jasmine-soft: var(--jasmine-soft);
+  --color-jasmine-deep: var(--jasmine-deep);
+  --color-signal: var(--signal);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+:root {
+  --background: #ffffff;
+  --foreground: var(--ink);
+  --card: #ffffff;
+  --card-foreground: var(--ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--ink);
+  --primary: var(--acm-500);
+  --primary-foreground: #ffffff;
+  --secondary: var(--acm-50);
+  --secondary-foreground: var(--acm-800);
+  --muted: #f1f5f9;
+  --muted-foreground: #5b6b7f;
+  --accent: var(--jasmine-soft);
+  --accent-foreground: #6b5410;
+  --destructive: #d92d20;
+  --border: #e2e8f0;
+  --input: #dbe3ec;
+  --ring: var(--acm-400);
+  --chart-1: var(--acm-500);
+  --chart-2: var(--signal);
+  --chart-3: var(--jasmine-deep);
+  --chart-4: var(--acm-700);
+  --chart-5: var(--acm-200);
+  --radius: 0.75rem;
+  --sidebar: #fbfcfe;
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--acm-500);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--acm-50);
+  --sidebar-accent-foreground: var(--acm-800);
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: var(--acm-400);
+
+  /* Hero mesh. Tinted per theme — reusing the light values in dark turns the
+     warm blob into a grey smudge. */
+  --mesh-1: var(--acm-100);
+  --mesh-2: var(--jasmine-soft);
+  --mesh-3: var(--acm-50);
+}
+
+/* Dark mode keeps the blue cast rather than going neutral-grey, so the
+   chapter's colour still reads as the brand at night. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --background: #08131f;
+  --foreground: #e8eef6;
+  --card: #0e1c2c;
+  --card-foreground: #e8eef6;
+  --popover: #0e1c2c;
+  --popover-foreground: #e8eef6;
+  --primary: var(--acm-300);
+  --primary-foreground: #06121e;
+  --secondary: #16283c;
+  --secondary-foreground: #dbe7f5;
+  --muted: #16283c;
+  --muted-foreground: #93a7bd;
+  --accent: #2a2415;
+  --accent-foreground: var(--jasmine);
+  --destructive: #f97066;
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: var(--acm-400);
+  --chart-1: var(--acm-300);
+  --chart-2: var(--signal);
+  --chart-3: var(--jasmine);
+  --chart-4: var(--acm-200);
+  --chart-5: var(--acm-500);
+  --sidebar: #0b1727;
+  --sidebar-foreground: #e8eef6;
+  --sidebar-primary: var(--acm-300);
+  --sidebar-primary-foreground: #06121e;
+  --sidebar-accent: #16283c;
+  --sidebar-accent-foreground: #dbe7f5;
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: var(--acm-400);
+
+  --mesh-1: #14304f;
+  --mesh-2: #2a2415;
+  --mesh-3: #0f2740;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+  }
+  html {
+    @apply font-sans antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-heading tracking-tight;
+  }
+}
+
+@layer components {
+  /* ----------------------------------------------------------
+     Signature motif: the skill slot.
+
+     A team is a set of skills, some covered and some still open.
+     Filled slots are solid brand blue; open slots are dashed jasmine.
+     The same two classes render a team card, the team page roster and
+     the suggested-teammates panel, so "what's missing" always looks
+     the same wherever you meet it.
+     ---------------------------------------------------------- */
+  .slot {
+    @apply inline-flex h-8 items-center gap-1.5 rounded-full px-3 font-mono text-xs
+           tracking-tight transition-colors;
+  }
+  .slot-filled {
+    @apply bg-acm-500 text-white;
+  }
+  .slot-open {
+    @apply border border-dashed border-jasmine-deep bg-jasmine-soft text-[#6b5410]
+           dark:bg-transparent dark:text-jasmine;
+  }
+}
+
+/* The hero animates itself together on load. Anyone who has asked their OS
+   for less motion gets the finished state instead. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
