@@ -28,7 +28,8 @@
 ### Two decisions that changed since the spec was written
 
 1. **recharts is cut.** Every metric in this phase is a bar or a single number, and a bar is a `<span>` with a percentage width. Adding a ~500 KB charting library to draw rectangles fails the "native platform feature covers it" test. If a genuine time-series chart is ever needed, add it then.
-2. **The new dependency is `qrcode`** (plus `@types/qrcode`), which cannot be replaced by CSS. Test file numbering also shifts: this phase takes `05` and `06`, so showcase becomes `07` and recruitment `08`.
+2. **The new dependency is `qrcode`** (plus `@types/qrcode`), which cannot be replaced by CSS.
+3. **Scope narrowed to this phase alone.** Showcase, resource hub, recruitment and bulk tools were cut by decision after the spec was written. Nothing in this plan changes as a result — 4A never depended on them — but `toCsv()` no longer has a second known consumer, and no public or unauthenticated route is being added. Everything stays behind the approval gate.
 
 ---
 
@@ -40,7 +41,7 @@
 | `supabase/migrations/*_contribution_points.sql` | Weights table, seeds, `member_contributions` view |
 | `supabase/tests/05_attendance.sql` | Check-in authorisation and code-window assertions |
 | `supabase/tests/06_contributions.sql` | Points arithmetic and weight-edit authorisation |
-| `src/lib/csv.ts` | `toCsv()` — RFC 4180 quoting. Reused by Phase 4C |
+| `src/lib/csv.ts` | `toCsv()` — RFC 4180 quoting |
 | `src/lib/csv.test.ts` | Node built-in test runner check for the quoting rules |
 | `src/lib/actions/attendance.ts` | `checkIn`, `getCheckinCode`, `setAttendance` server actions |
 | `src/app/(app)/events/[id]/checkin/page.tsx` | The QR target — member confirms presence |
@@ -725,7 +726,7 @@ git commit -m "feat: derived contribution points with admin-tunable weights"
 
 ## Task 4: CSV helper
 
-Built before the pages that need it, because Task 7 and all of Phase 4C depend on it. A CSV quoter is exactly the kind of code that fails silently — one member with a comma in their name shifts every column in a report that goes to faculty — so it gets the one unit test in this plan.
+Built before the page that needs it. A CSV quoter is exactly the kind of code that fails silently — one member with a comma in their name shifts every column in a report that goes to faculty — so it gets the one unit test in this plan.
 
 **Files:**
 - Create: `src/lib/csv.ts`
@@ -1866,7 +1867,7 @@ git commit -m "docs: record attendance and contribution rules; link the check-in
 
 **Spec coverage.** Every 4A requirement maps to a task: rotating code and QR-as-URL → Task 2 and 6; `event_attendance` with the composite PK → Task 2; derived points with a weights table → Task 3; participation rate, branch/year distribution, skill coverage, team fill rate → Task 8; CSV export via a shared helper → Tasks 4 and 8; leaderboard → Task 7; `05_attendance.sql` and the new `06_contributions.sql` → Tasks 2 and 3. Task 1 is a prerequisite the spec listed under 4D but which cannot wait, since writing migrations 14 and 15 into a repo with no 1–13 leaves them unreviewable.
 
-**Deviations from the spec, both deliberate:** recharts is cut in favour of CSS bars, and test numbering shifts so showcase becomes `07` and recruitment `08`.
+**Deviations from the spec, both deliberate:** recharts is cut in favour of CSS bars, and pulling the existing migrations into git is promoted from 4D to Task 1.
 
 **Naming consistency.** `event_checkin_code_raw` (internal, ungated) and `event_checkin_code` (staff wrapper) are distinct on purpose and used consistently — the raw form appears only inside `check_in_to_event` and the SQL tests, the wrapper only in `getCheckinCode`. `set_attendance` is the RPC, `setAttendance` the server action. `AttendanceState` is the single action-state type across all three actions. `toCsv` is defined in Task 4 and consumed in Task 8 with the same signature. `BarList` takes `{ label, value }[]` everywhere.
 

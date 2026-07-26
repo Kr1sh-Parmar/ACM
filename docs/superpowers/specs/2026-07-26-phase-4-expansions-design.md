@@ -1,7 +1,7 @@
-# Phase 4 Expansions — Design
+# Phase 4 — Participation & Analytics — Design
 
 **Date:** 2026-07-26
-**Status:** Approved, not yet planned
+**Status:** Approved · planned in [`../plans/2026-07-26-phase-4a-participation-analytics.md`](../plans/2026-07-26-phase-4a-participation-analytics.md)
 **Predecessor:** Phases 1–3 (profiles + approval gate, skills directory, event hosting, team formation, admin dashboard) — code-complete, database rules tested in `supabase/tests/01`–`04`.
 
 ---
@@ -12,29 +12,47 @@ The chapter app currently does three things: it gates membership behind manual a
 approval, it lets members advertise skills and find each other, and it runs
 hackathon/project team formation. Section 6 of
 [`context/ACM_Committee_Management_System_Spec.md`](../../../context/ACM_Committee_Management_System_Spec.md)
-lists eight suggested expansions. This spec covers the three that were selected,
-grouped by the data they share rather than by the order the spec lists them.
+lists eight suggested expansions. **One is being built: participation & analytics.**
 
 **A caveat recorded deliberately:** the app has not been deployed and no committee
 member has used it. Choosing expansions without usage data is guesswork, and that
-was raised before scoping. The decision was to build features now and ship
+was raised before scoping. The decision was to build this feature first and ship
 afterwards, so Phase 4D exists to close that gap rather than leaving it implicit.
 
 ### Decisions
 
 | Decision | Choice |
 |---|---|
-| Scope | Participation & analytics · Showcase & resource hub · Recruitment & bulk tools |
-| Dropped | Mentorship/buddy system · feedback & polls |
-| Public surface | `/showcase` only. Recruitment reuses the existing signup → pending pipeline |
+| Scope | Participation & analytics only |
+| Dropped | Showcase & resource hub · recruitment & bulk tools · mentorship · feedback & polls |
+| Public surface | **None.** Every route stays behind the approval gate |
 | Check-in trust | Self-service rotating code, plus admin override |
-| Order | 4A → 4B → 4C → 4D |
+| Cost | Free tier throughout — no email, no cron, no external service |
+| Order | 4A → 4D (ship it) |
 
-### Why mentorship and feedback were cut
+### Why the rest was cut
 
-Both depend on sustained opt-in from people who are not yet using the tool at all,
-and neither shares code with anything that exists. They are additive later; nothing
-in this spec forecloses them.
+Showcase and recruitment were scoped and then dropped by decision, not by discovery —
+their full designs are preserved in git at commit `ff79ee4` if they are ever wanted
+back. Mentorship and feedback were cut earlier because both depend on sustained
+opt-in from people who are not yet using the tool at all.
+
+Dropping the showcase removes the only public, unauthenticated surface from the plan,
+which takes the single largest security risk off the table: no `anon` RLS policies,
+no narrowed contributor view, no `proxy.ts` exemptions. Everything stays behind the
+approval gate exactly as it is today.
+
+### Everything here is free
+
+Postgres, RLS and Storage are within the Supabase free tier for a chapter-sized
+membership. `qrcode` generates locally in the browser — no QR service, no network
+call. There is no outbound email, no `pg_cron`, and no paid dependency anywhere in
+this phase.
+
+Supabase's built-in mailer is also free, but it is capped at roughly 2 emails/hour,
+which is why **Confirm email stays OFF** and admin approval remains the only gate.
+That is a rate-limit decision, not a billing one — but the outcome is the same, and
+leaving confirmation on is what would eventually force a paid SMTP provider.
 
 ---
 
@@ -130,8 +148,8 @@ or a single number, and a bar is a `<span>` with a percentage width — pulling 
 ~500 KB of recharts to draw rectangles fails the "native platform feature covers it"
 test. Add one when a genuine time series appears, not before.
 
-CSV export goes through a single `toCsv()` helper in `src/lib/`; Phase 4C reuses it
-rather than growing a second exporter.
+CSV export goes through a single `toCsv()` helper in `src/lib/` so any later exporter
+has something to reuse.
 
 The one new dependency in this phase is `qrcode`, for generating the projected code.
 That one cannot be done in CSS.
@@ -143,127 +161,6 @@ That one cannot be done in CSS.
 /events/[id]/checkin                approved members — the QR target
 /admin/events/[id]/attendance       staff: live count, manual add/remove
 /admin/analytics                    staff: charts + CSV export
-```
-
----
-
-## Phase 4B — Showcase & Resource Hub
-
-**This phase carries the only real security risk in the plan.** Every route today sits
-behind the approval gate. `/showcase` is the first hole in it, and one careless policy
-publishes the member directory to the internet.
-
-### The specific hazard
-
-A showcase entry credits its contributors, so the public page needs member names and
-photos — but `profiles` must stay completely closed to `anon`. Granting `anon` a
-filtered `SELECT` on `profiles` is the tempting shortcut and the wrong one: policy
-predicates are easy to get subtly wrong, and the blast radius is the whole directory.
-
-Instead, contributors reach the public page through a **narrow view** exposing only
-`full_name`, `photo_url` and `designation`, and only for members credited on a
-`published` project. `anon` never touches `profiles` directly.
-
-### Schema
-
-```
-showcase_projects
-  id, title, summary, description, cover_url, repo_url, demo_url
-  event_id      FK -> events, nullable   -- "born from this hackathon"
-  status        draft | submitted | published
-  submitted_by  FK -> profiles
-  published_at  timestamptz
-
-showcase_contributors   project_id, member_id, role
-showcase_tech           project_id, skill_id      -- reuses the existing skill tags
-
-resources
-  id, title, url, kind (link|recording|template|doc),
-  description, category, created_by, created_at
-```
-
-**Naming:** `events.type` already has a `'project'` value. The table is
-`showcase_projects`, never `projects`, and the distinction gets a comment in the
-migration.
-
-Reusing `skills` for tech stack means a showcase entry's stack is the same vocabulary
-as member skills — so "who has shipped something in Rust" becomes answerable without
-new tagging.
-
-### Flow and access
-
-Members submit (`draft` → `submitted`), admins publish (`submitted` → `published`).
-Same mental model as the approval queue, so the admin UI reuses that shape.
-
-`/showcase` and `/showcase/[id]` live outside the `(app)` route group and are
-exempted in `src/proxy.ts`. The proxy exemption is a UX convenience; the RLS policies
-are the enforcement, and both are tested.
-
-The resource hub is deliberately small: an admin-curated list of links with a category
-filter. No uploads, no versioning, no per-member collections.
-
-### Routes
-
-```
-/showcase, /showcase/[id]      public, no login
-/showcase/submit               approved members
-/resources                     approved members
-/admin/showcase                staff: publish queue
-/admin/resources               staff: curate
-```
-
----
-
-## Phase 4C — Recruitment & Bulk Tools
-
-The smallest phase, because routing recruitment through signup made it mostly reuse.
-An applicant **is** a pending profile — signup → pending → admin review already
-exists and is already tested. Recruitment mode layers cycle-specific answers,
-interview slots and reviewer notes on top of it.
-
-### Schema
-
-```
-recruitment_cycles   title, opens_at, closes_at, status (draft|open|closed),
-                     questions jsonb
-applications         cycle_id, profile_id, answers jsonb, status
-                     UNIQUE (cycle_id, profile_id)
-interview_slots      cycle_id, starts_at, interviewer_id,
-                     applicant_id nullable
-                     UNIQUE (applicant_id, cycle_id) where applicant_id is not null
-reviewer_notes       application_id, reviewer_id, note, rating, created_at
-```
-
-### Two deliberate cuts
-
-**No form builder.** `questions` is a flat array of `{label, type}` where type is
-text, textarea or select. Admins edit it as a repeatable field list. A drag-and-drop
-builder is a project in its own right and upgrades later without a schema change,
-since the column is already `jsonb`.
-
-**No scheduling engine.** Admins create slots with `<input type="datetime-local">`;
-applicants claim one from a list; a taken slot is a unique constraint, not a conflict
-resolver. No calendar grid, no timezone arithmetic, no availability matching.
-
-**Segmented email is cut entirely.** Outbound email was declined in Phase 1 and
-Supabase's built-in mailer caps at roughly 2/hour, so shipping it would produce a
-feature that silently fails under exactly the load it exists for.
-
-### Bulk tools
-
-A checkbox column on the existing approvals queue with approve/reject-selected, plus
-CSV export through Phase 4A's `toCsv()` helper. Bulk actions route through the same
-`reviewMember` server action per row, so the audit log records each decision
-individually — a bulk approval that writes one audit row for forty people is not an
-audit log.
-
-### Routes
-
-```
-/apply                          signed-in applicants: fill the open cycle's form
-/apply/interview                claim a slot
-/admin/recruitment              staff: cycles, applications, notes
-/admin/recruitment/[cycleId]    review pipeline
 ```
 
 ---
@@ -285,20 +182,17 @@ Deferred from the sequencing decision, not dropped:
 
 ## Verification
 
-Three new SQL test files continuing `supabase/tests/01`–`04`, asserting against the
+Two new SQL test files continuing `supabase/tests/01`–`04`, asserting against the
 database rather than the UI, because the database is what enforces these rules.
 
 | File | Asserts |
 |---|---|
 | `05_attendance.sql` | Stale code rejected; current code accepted; repeat check-in is idempotent; direct table writes refused for everyone; a member cannot mark someone else present; admin override lands, is attributed, and is reversible |
 | `06_contributions.sql` | Points arithmetic matches the weights; weights are admin-only; deleting an event unwinds the points it granted |
-| `07_showcase_public.sql` | **`anon` reads published projects and nothing else** — zero rows from `profiles`, `events`, `teams`, `member_skills`; draft and submitted projects invisible; the contributor view leaks no column beyond name/photo/designation |
-| `08_recruitment.sql` | Applicants read only their own application; reviewer notes are staff-only; slot double-booking rejected; a closed cycle accepts nothing |
 
-`07` is the one that matters most, and it should assert on **specific** error text and
-row counts. A bare "it returned nothing" assertion can pass for the wrong reason —
-that is exactly how the enum-cast bug in `respond_to_join_request` hid through an
-entire test run in Phase 2.
+Both assert on **specific** error text and row counts. A bare "it threw something"
+assertion can pass for the wrong reason — that is exactly how the enum-cast bug in
+`respond_to_join_request` hid through an entire test run in Phase 2.
 
 Every new `SECURITY DEFINER` function gets the same treatment as the existing ones:
 `search_path` pinned to `''`, execute revoked from `public`, granted only where needed.
@@ -311,12 +205,14 @@ and each phase ends in a state that can be opened in a browser and checked.
 
 ## Out of Scope
 
-Mentorship/buddy system · feedback forms and interest polls · segmented email ·
-drag-and-drop form builder · interview scheduling with conflict resolution · file
-uploads in the resource hub · public write access of any kind · alumni roles · peer
-endorsements.
+Project showcase · resource hub · recruitment cycles · interview scheduling · bulk
+approve/reject · mentorship/buddy system · feedback forms and interest polls ·
+segmented email · alumni roles · peer endorsements · any public or unauthenticated
+route.
 
-All are additive. None require changing the schema above.
+All are additive. None require changing the schema above. The showcase and
+recruitment designs are preserved in git at commit `ff79ee4` should they ever be
+wanted back.
 
 ---
 
