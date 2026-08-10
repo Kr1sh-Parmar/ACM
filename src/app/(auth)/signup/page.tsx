@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { AlertCircle, MailCheck } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { signUp, type AuthState } from "../actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,23 +10,6 @@ import { Label } from "@/components/ui/label";
 
 export default function SignupPage() {
   const [state, formAction, pending] = useActionState<AuthState, FormData>(signUp, {});
-
-  if (state.checkEmail) {
-    return (
-      <div className="rounded-2xl border bg-card p-6 text-center shadow-lg shadow-acm-900/5 dark:shadow-black/40">
-        <MailCheck className="mx-auto size-8 text-acm-500" aria-hidden />
-        <h1 className="mt-4 font-heading text-2xl font-bold tracking-tight">
-          Confirm your email
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          We sent you a link. Click it, then sign in to finish your profile.
-        </p>
-        <Button asChild variant="outline" className="mt-6 w-full">
-          <Link href="/login">Go to sign in</Link>
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="rounded-2xl border bg-card p-6 shadow-lg shadow-acm-900/5 dark:shadow-black/40">

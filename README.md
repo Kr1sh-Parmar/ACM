@@ -32,8 +32,8 @@ Two things the API can't set and the app depends on:
 1. **Authentication → Sign In / Providers → Email → "Confirm email": OFF.**
    Admin approval is the gate, so email confirmation is redundant — and
    Supabase's built-in mailer is capped at roughly 2 emails/hour, which would
-   break signups the moment a batch of members registers. With it on, signup
-   stops at a "confirm your email" screen.
+   break signups the moment a batch of members registers. The app has no
+   confirmation flow — with it on, signup just fails with an error.
 2. **Authentication → Policies → "Leaked password protection": ON.**
    Checks new passwords against HaveIBeenPwned.
 

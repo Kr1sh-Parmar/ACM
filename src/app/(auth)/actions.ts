@@ -6,8 +6,6 @@ import { createClient } from "@/lib/supabase/server";
 
 export type AuthState = {
   error?: string;
-  /** Set when the project has email confirmation switched on. */
-  checkEmail?: boolean;
 };
 
 export async function signIn(_prev: AuthState, formData: FormData): Promise<AuthState> {
@@ -53,10 +51,12 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     };
   }
 
-  // With email confirmation off, signUp returns a session and we go straight on.
-  // With it on, there's no session until the link is clicked — handle both so
-  // the flow doesn't silently dead-end if that project setting ever changes.
-  if (!data.session) return { checkEmail: true };
+  // Admin approval is the gate, so the project runs with "Confirm email" OFF and
+  // signUp hands back a session immediately. If it ever gets switched back on
+  // there's no session here — say so rather than dead-ending on a blank redirect.
+  if (!data.session) {
+    return { error: "Signups are misconfigured. Ask an admin to turn off email confirmation." };
+  }
 
   revalidatePath("/", "layout");
   redirect("/onboarding");

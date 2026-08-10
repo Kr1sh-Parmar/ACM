@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 /** Reachable without signing in. Everything else requires a session. */
-const PUBLIC_PATHS = ["/", "/login", "/signup", "/auth"];
+const PUBLIC_PATHS = ["/", "/login", "/signup"];
 
 /** Where a signed-in but not-yet-approved member is allowed to go. */
 const WAITING_ROOM_PATHS = ["/onboarding", "/pending"];
