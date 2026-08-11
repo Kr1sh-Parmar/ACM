@@ -48,7 +48,7 @@ export function SkillModeration({ skills }: { skills: ModeratedSkill[] }) {
   return (
     <div>
       {source && (
-        <div className="sticky top-16 z-10 mb-5 flex flex-wrap items-center gap-3 rounded-xl border border-acm-300 bg-acm-50 p-4 dark:bg-acm-900/40">
+        <div className="sticky top-16 z-10 mb-5 flex flex-wrap items-center gap-3 rounded-xl border border-acm-300/25 bg-acm-500/14 p-4">
           <span className="text-sm">
             Merging <span className="font-mono font-medium">{source.name}</span> into… pick
             the tag to keep.
@@ -73,7 +73,7 @@ export function SkillModeration({ skills }: { skills: ModeratedSkill[] }) {
             <li
               key={skill.id}
               className={`flex flex-wrap items-center gap-3 px-4 py-3 ${
-                isSource ? "bg-acm-50 dark:bg-acm-900/40" : ""
+                isSource ? "bg-acm-500/15" : ""
               }`}
             >
               <span className="font-mono text-sm">{skill.name}</span>

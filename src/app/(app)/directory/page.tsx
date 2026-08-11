@@ -5,6 +5,8 @@ import { requireApproved } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PROFICIENCIES, roleLabel, type Proficiency } from "@/lib/constants";
 import { DirectoryFilters } from "@/components/directory/directory-filters";
+import { EmptyState } from "@/components/shell/empty-state";
+import { PageHeader } from "@/components/shell/page-header";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = { title: "Member directory" };
@@ -99,12 +101,13 @@ export default async function DirectoryPage({
 
   return (
     <div>
-      <h1 className="font-heading text-3xl font-bold tracking-tight">Member directory</h1>
-      <p className="mt-2 text-muted-foreground">
-        Looking for someone who knows a thing? Filter by skill and find them.
-      </p>
+      <PageHeader
+        eyebrow="The chapter"
+        title="Member directory"
+        description="Looking for someone who knows a thing? Filter by skill and find them."
+      />
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
+      <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
         <aside className="lg:sticky lg:top-20 lg:self-start">
           <DirectoryFilters skills={allSkills ?? []} />
         </aside>
@@ -115,13 +118,9 @@ export default async function DirectoryPage({
           </p>
 
           {results.length === 0 ? (
-            <div className="mt-6 rounded-2xl border border-dashed py-16 text-center">
-              <SearchX className="mx-auto size-8 text-muted-foreground" aria-hidden />
-              <p className="mt-4 font-heading text-lg font-semibold">Nobody matches that</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Try dropping a filter, or lowering the level you asked for.
-              </p>
-            </div>
+            <EmptyState className="mt-6" icon={SearchX} title="Nobody matches that">
+              Try dropping a filter, or lowering the level you asked for.
+            </EmptyState>
           ) : (
             <ul className="mt-5 grid gap-5 sm:grid-cols-2">
               {results.map((member) => {
@@ -130,16 +129,16 @@ export default async function DirectoryPage({
                 );
 
                 return (
-                  <li key={member.id} className="rounded-2xl border bg-card p-5">
+                  <li className="glass rim rounded-2xl p-5 shadow-glow-md" key={member.id}>
                     <div className="flex items-start gap-3">
                       <MemberAvatar
                         id={member.id}
                         name={member.full_name}
-                        className="size-11 border"
+                        className="size-11 ring-1 ring-white/15"
                       />
 
                       <div className="min-w-0 flex-1">
-                        <h2 className="font-heading font-semibold leading-tight">
+                        <h2 className="font-heading leading-tight font-semibold">
                           {member.full_name}
                         </h2>
                         <p className="text-sm text-muted-foreground">
@@ -152,9 +151,7 @@ export default async function DirectoryPage({
                       </div>
 
                       {member.open_to_invites && (
-                        <Badge className="shrink-0 bg-acm-50 text-acm-700 hover:bg-acm-50 dark:bg-acm-900/50 dark:text-acm-200">
-                          Available
-                        </Badge>
+                        <Badge className="shrink-0">Available</Badge>
                       )}
                     </div>
 
@@ -169,7 +166,7 @@ export default async function DirectoryPage({
                         {skills.slice(0, 6).map((skill) => (
                           <li
                             key={skill.name}
-                            className="rounded-full border px-2 py-0.5 font-mono text-xs"
+                            className="rounded-full border border-white/12 bg-white/4 px-2.5 py-0.5 font-mono text-xs"
                             title={skill.proficiency}
                           >
                             {skill.name}

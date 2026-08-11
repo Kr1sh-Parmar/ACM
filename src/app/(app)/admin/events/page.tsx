@@ -4,6 +4,8 @@ import { CalendarPlus } from "lucide-react";
 import { requireStaff } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { EventStatusControl } from "@/components/admin/event-status-control";
+import { EmptyState } from "@/components/shell/empty-state";
+import { PageHeader } from "@/components/shell/page-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -20,30 +22,25 @@ export default async function AdminEventsPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight">Events</h1>
-          <p className="mt-2 text-muted-foreground">
-            Hackathons and projects members can build teams for.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/admin/events/new">
-            <CalendarPlus className="size-4" aria-hidden />
-            Host an event
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        title="Events"
+        description="Hackathons and projects members can build teams for."
+        action={
+          <Button asChild>
+            <Link href="/admin/events/new">
+              <CalendarPlus className="size-4" aria-hidden />
+              Host an event
+            </Link>
+          </Button>
+        }
+      />
 
       {(events ?? []).length === 0 ? (
-        <div className="mt-10 rounded-2xl border border-dashed py-16 text-center">
-          <p className="font-heading text-lg font-semibold">No events yet</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Host one and members can start forming teams.
-          </p>
-        </div>
+        <EmptyState icon={CalendarPlus} title="No events yet">
+          Host one and members can start forming teams.
+        </EmptyState>
       ) : (
-        <ul className="mt-8 divide-y rounded-2xl border">
+        <ul className="solid rim divide-y divide-white/7 overflow-hidden rounded-2xl">
           {(events ?? []).map((event) => (
             <li key={event.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
               <div className="min-w-0 flex-1">
@@ -60,10 +57,7 @@ export default async function AdminEventsPage() {
                 </p>
               </div>
 
-              <Badge
-                variant={event.status === "open" ? "default" : "outline"}
-                className={event.status === "open" ? "bg-acm-500" : ""}
-              >
+              <Badge variant={event.status === "open" ? "default" : "outline"}>
                 {event.status}
               </Badge>
 

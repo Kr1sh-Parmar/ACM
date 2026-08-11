@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Cake } from "lucide-react";
+import { Boxes, Cake, CalendarDays, Inbox, Users } from "lucide-react";
 import { requireStaff } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { StatTile } from "@/components/shell/stat-tile";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = { title: "Admin overview" };
@@ -36,41 +37,55 @@ export default async function AdminOverviewPage() {
       .limit(8),
   ]);
 
-  const stats = [
-    { label: "Waiting on review", value: count(pending), href: "/admin/approvals" },
-    { label: "Approved members", value: count(approved), href: "/admin/members" },
-    { label: "Open events", value: count(openEvents), href: "/admin/events" },
-    { label: "Teams formed", value: count(teams), href: "/admin/events" },
-  ];
-
   const soon = birthdays.data ?? [];
+  const waiting = count(pending);
 
   return (
     <div>
       <h1 className="font-heading text-2xl font-bold tracking-tight">Overview</h1>
 
-      <dl className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Link key={stat.label} href={stat.href}>
-            <div className="h-full rounded-2xl border bg-card p-5 transition-colors hover:border-acm-300">
-              <dt className="text-sm text-muted-foreground">{stat.label}</dt>
-              <dd className="mt-2 font-mono text-3xl font-medium">{stat.value}</dd>
-            </div>
-          </Link>
-        ))}
-      </dl>
+      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Only the queue gets the jasmine treatment — it is the one number
+            here that is a backlog rather than a fact. */}
+        <StatTile
+          href="/admin/approvals"
+          label="Waiting on review"
+          value={waiting}
+          icon={Inbox}
+          attention={waiting > 0}
+          hint={waiting > 0 ? "Nobody gets in until you look" : "Queue is clear"}
+        />
+        <StatTile
+          href="/admin/members"
+          label="Approved members"
+          value={count(approved)}
+          icon={Users}
+        />
+        <StatTile
+          href="/admin/events"
+          label="Open events"
+          value={count(openEvents)}
+          icon={CalendarDays}
+        />
+        <StatTile
+          href="/admin/events"
+          label="Teams formed"
+          value={count(teams)}
+          icon={Boxes}
+        />
+      </div>
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-2">
+      <div className="mt-12 grid gap-8 lg:grid-cols-2">
         <section>
-          <h2 className="flex items-center gap-2 font-heading text-lg font-semibold">
-            <Cake className="size-5 text-jasmine-deep" aria-hidden />
+          <h2 className="flex items-center gap-2.5 font-heading text-lg font-semibold">
+            <Cake className="size-[1.1rem] text-jasmine" aria-hidden />
             Birthdays this week
           </h2>
 
           {soon.length === 0 ? (
             <p className="mt-3 text-sm text-muted-foreground">None in the next 7 days.</p>
           ) : (
-            <ul className="mt-4 divide-y rounded-2xl border">
+            <ul className="solid rim mt-4 divide-y divide-white/7 overflow-hidden rounded-2xl">
               {soon.map((person) => (
                 <li key={person.id} className="flex items-center gap-3 px-5 py-3">
                   <span className="min-w-0 flex-1 truncate font-medium">{person.full_name}</span>
@@ -88,7 +103,7 @@ export default async function AdminOverviewPage() {
 
           <Link
             href="/admin/birthdays"
-            className="mt-3 inline-block text-sm text-acm-600 hover:underline dark:text-acm-300"
+            className="mt-3 inline-block text-sm text-acm-300 hover:underline"
           >
             Open the birthday panel
           </Link>
@@ -100,7 +115,7 @@ export default async function AdminOverviewPage() {
           {(activity.data ?? []).length === 0 ? (
             <p className="mt-3 text-sm text-muted-foreground">Nothing yet.</p>
           ) : (
-            <ul className="mt-4 divide-y rounded-2xl border">
+            <ul className="solid rim mt-4 divide-y divide-white/7 overflow-hidden rounded-2xl">
               {(activity.data ?? []).map((entry) => {
                 const meta = (entry.meta ?? {}) as { to?: string };
                 return (
@@ -128,7 +143,7 @@ export default async function AdminOverviewPage() {
 
           <Link
             href="/admin/audit"
-            className="mt-3 inline-block text-sm text-acm-600 hover:underline dark:text-acm-300"
+            className="mt-3 inline-block text-sm text-acm-300 hover:underline"
           >
             See the full audit log
           </Link>

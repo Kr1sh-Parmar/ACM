@@ -4,10 +4,29 @@ import { CalendarDays, Megaphone, Pin, Users } from "lucide-react";
 import { requireApproved } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { WithdrawRequestButton } from "@/components/teams/withdraw-request-button";
+import { EmptyState } from "@/components/shell/empty-state";
+import { PageHeader } from "@/components/shell/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Dashboard" };
+
+/** Section heads on this page all carry an icon, so they share one shape. */
+function SectionHeading({
+  icon: Icon,
+  children,
+}: {
+  icon: typeof Users;
+  children: React.ReactNode;
+}) {
+  return (
+    <h2 className="flex items-center gap-2.5 font-heading text-xl font-semibold">
+      <Icon className="size-[1.1rem] text-acm-300" aria-hidden />
+      {children}
+    </h2>
+  );
+}
 
 export default async function DashboardPage() {
   const profile = await requireApproved();
@@ -43,45 +62,48 @@ export default async function DashboardPage() {
   const requests = myRequests ?? [];
 
   return (
-    <div className="space-y-12">
-      <div>
-        <h1 className="font-heading text-3xl font-bold tracking-tight">
-          Welcome back, {profile.full_name.split(" ")[0]}.
-        </h1>
-        {!profile.open_to_invites && (
-          <p className="mt-2 text-sm text-muted-foreground">
-            You&apos;re marked as not open to team invites.{" "}
-            <Link href="/profile" className="underline underline-offset-2">
-              Change that
-            </Link>
-            .
-          </p>
-        )}
-      </div>
+    <div className="space-y-14">
+      <PageHeader
+        eyebrow={`Signed in as ${profile.full_name}`}
+        title={`Welcome back, ${profile.full_name.split(" ")[0]}.`}
+        description={
+          !profile.open_to_invites ? (
+            <>
+              You&apos;re marked as not open to team invites.{" "}
+              <Link href="/profile" className="text-acm-300 underline underline-offset-2">
+                Change that
+              </Link>
+              .
+            </>
+          ) : undefined
+        }
+        // Matches the wrapper's space-y-14. PageHeader's own mb-8 outranks the
+        // space-y rule in the cascade, so the gap has to be stated here.
+        className="mb-14"
+      />
 
       {(announcements ?? []).length > 0 && (
         <section>
-          <h2 className="flex items-center gap-2 font-heading text-xl font-semibold">
-            <Megaphone className="size-5 text-muted-foreground" aria-hidden />
-            Announcements
-          </h2>
-          <ul className="mt-4 space-y-3">
+          <SectionHeading icon={Megaphone}>Announcements</SectionHeading>
+          <ul className="mt-5 space-y-3">
             {(announcements ?? []).map((note) => (
               <li
                 key={note.id}
-                className={`rounded-2xl border p-5 ${
-                  note.pinned
-                    ? "border-jasmine-deep bg-jasmine-soft dark:bg-jasmine-deep/10"
-                    : "bg-card"
-                }`}
+                className={cn(
+                  "rim rounded-2xl p-5 shadow-glow-md",
+                  note.pinned ? "border border-jasmine/25 bg-accent" : "glass",
+                )}
+                style={
+                  note.pinned ? ({ "--rim-hue": "45deg" } as React.CSSProperties) : undefined
+                }
               >
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="font-heading font-semibold">{note.title}</h3>
                   {note.pinned && (
-                    <Pin className="size-4 shrink-0 text-jasmine-deep" aria-hidden />
+                    <Pin className="size-4 shrink-0 text-jasmine" aria-hidden />
                   )}
                 </div>
-                <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">
+                <p className="mt-2 text-sm whitespace-pre-line text-muted-foreground">
                   {note.body}
                 </p>
               </li>
@@ -91,27 +113,30 @@ export default async function DashboardPage() {
       )}
 
       <section>
-        <h2 className="flex items-center gap-2 font-heading text-xl font-semibold">
-          <Users className="size-5 text-muted-foreground" aria-hidden />
-          Your teams
-        </h2>
+        <SectionHeading icon={Users}>Your teams</SectionHeading>
 
         {teams.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed py-10 text-center">
-            <p className="text-sm text-muted-foreground">
-              You&apos;re not on a team yet.
-            </p>
-            <Button asChild variant="outline" size="sm" className="mt-4">
-              <Link href="/events">Browse events</Link>
-            </Button>
-          </div>
+          <EmptyState
+            className="mt-5"
+            title="You're not on a team yet"
+            action={
+              <Button asChild variant="outline" size="sm">
+                <Link href="/events">Browse events</Link>
+              </Button>
+            }
+          >
+            Teams form around open events. Find one that needs what you do.
+          </EmptyState>
         ) : (
-          <ul className="mt-4 divide-y rounded-2xl border">
+          <ul className="solid rim mt-5 divide-y divide-white/7 overflow-hidden rounded-2xl">
             {teams.map((row) => (
-              <li key={row.team_id} className="flex flex-wrap items-center gap-3 px-5 py-4">
+              <li
+                key={row.team_id}
+                className="flex flex-wrap items-center gap-3 px-5 py-4 transition-colors hover:bg-white/3"
+              >
                 <Link
                   href={`/events/${row.teams!.event_id}/teams/${row.teams!.id}`}
-                  className="font-medium hover:underline"
+                  className="font-medium hover:text-acm-200 hover:underline"
                 >
                   {row.teams!.name}
                 </Link>
@@ -132,7 +157,7 @@ export default async function DashboardPage() {
       {requests.length > 0 && (
         <section>
           <h2 className="font-heading text-xl font-semibold">Requests you&apos;ve sent</h2>
-          <ul className="mt-4 divide-y rounded-2xl border">
+          <ul className="solid rim mt-5 divide-y divide-white/7 overflow-hidden rounded-2xl">
             {requests.map((request) => (
               <li key={request.id} className="flex flex-wrap items-center gap-3 px-5 py-4">
                 <div className="min-w-0 flex-1">
@@ -150,19 +175,16 @@ export default async function DashboardPage() {
 
       {(openEvents ?? []).length > 0 && (
         <section>
-          <h2 className="flex items-center gap-2 font-heading text-xl font-semibold">
-            <CalendarDays className="size-5 text-muted-foreground" aria-hidden />
-            Open now
-          </h2>
-          <ul className="mt-4 flex flex-wrap gap-3">
+          <SectionHeading icon={CalendarDays}>Open now</SectionHeading>
+          <ul className="mt-5 flex flex-wrap gap-3">
             {(openEvents ?? []).map((event) => (
               <li key={event.id}>
                 <Link
                   href={`/events/${event.id}`}
-                  className="inline-flex items-center gap-2 rounded-xl border bg-card px-4 py-2.5 text-sm transition-colors hover:border-acm-300"
+                  className="glass rim inline-flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-sm transition-colors hover:bg-surface-2"
                 >
                   {event.title}
-                  <span className="font-mono text-xs capitalize text-muted-foreground">
+                  <span className="font-mono text-xs text-muted-foreground capitalize">
                     {event.type}
                   </span>
                 </Link>

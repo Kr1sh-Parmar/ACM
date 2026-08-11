@@ -22,7 +22,7 @@ export function TeamAssembling() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="relative w-full max-w-md rounded-2xl border bg-card p-5 shadow-lg shadow-acm-900/5 dark:shadow-black/40">
+    <div className="glass rim relative w-full max-w-md rounded-2xl p-6 shadow-glow-lg">
       <div className="flex items-baseline justify-between">
         <h2 className="font-heading text-base font-semibold">Team Northstar</h2>
         <span className="font-mono text-xs text-muted-foreground">Hack the Campus</span>
@@ -36,7 +36,7 @@ export function TeamAssembling() {
           return (
             <li key={slot.skill}>
               <motion.div
-                className="flex items-center justify-between rounded-xl border px-3 py-2"
+                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/3 px-3 py-2"
                 initial={
                   reduceMotion || startsFilled
                     ? false
@@ -69,10 +69,8 @@ export function TeamAssembling() {
           );
         })}
 
-        <li className="flex items-center justify-between rounded-xl border border-dashed border-jasmine-deep bg-jasmine-soft px-3 py-2 dark:bg-transparent">
-          <span className="font-mono text-sm text-[#6b5410] dark:text-jasmine">
-            Open slot
-          </span>
+        <li className="flex items-center justify-between rounded-xl border border-dashed border-jasmine/35 px-3 py-2">
+          <span className="font-mono text-sm text-jasmine">Open slot</span>
           <span className="slot slot-open">
             <Plus className="size-3" aria-hidden />
             asking to join

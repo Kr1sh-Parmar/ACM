@@ -29,18 +29,20 @@ export default async function EditEventPage({
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-bold tracking-tight">{event.title}</h1>
-      <p className="mt-2 text-muted-foreground">
-        <Link href="/admin/events" className="hover:underline">
+      <p className="font-mono text-sm text-muted-foreground">
+        <Link href="/admin/events" className="hover:text-acm-200 hover:underline">
           All events
         </Link>
       </p>
+      <h1 className="mt-3 mb-8 font-heading text-2xl font-bold tracking-tight text-balance">
+        {event.title}
+      </h1>
 
-      <div className="mt-8">
+      <div className="glass rim max-w-2xl rounded-2xl p-6 shadow-glow-md sm:p-7">
         <EventForm event={event} />
       </div>
 
-      <section className="mt-14 max-w-2xl border-t pt-10">
+      <section className="mt-14 max-w-2xl border-t border-white/8 pt-10">
         <h2 className="font-heading text-xl font-bold tracking-tight">
           Teams ({(teams ?? []).length})
         </h2>
@@ -50,7 +52,7 @@ export default async function EditEventPage({
             No teams yet. They appear here as members create them.
           </p>
         ) : (
-          <ul className="mt-5 divide-y rounded-2xl border">
+          <ul className="solid rim mt-5 divide-y divide-white/7 overflow-hidden rounded-2xl">
             {(teams ?? []).map((team) => {
               const size = team.team_members.length;
               const openSlots = Math.max(0, event.team_max - size);
@@ -68,9 +70,7 @@ export default async function EditEventPage({
                   <span className="font-mono text-xs">
                     {size}/{event.team_max}
                     {openSlots > 0 && (
-                      <span className="ml-2 text-jasmine-deep">
-                        {openSlots} open
-                      </span>
+                      <span className="ml-2 text-jasmine">{openSlots} open</span>
                     )}
                   </span>
                 </li>

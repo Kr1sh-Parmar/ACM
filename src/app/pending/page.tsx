@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { CircleSlash, Clock, MessageCircleQuestion } from "lucide-react";
 import { requireProfile } from "@/lib/auth";
 import { signOut } from "@/app/(auth)/actions";
+import { Callout } from "@/components/shell/callout";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = { title: "Awaiting review" };
@@ -34,19 +35,16 @@ export default async function PendingPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-1 flex-col justify-center px-6 py-16">
-      <div className="rounded-2xl border bg-card p-8 text-center shadow-lg shadow-acm-900/5 dark:shadow-black/40">
-        <Icon className="mx-auto size-9 text-acm-500" aria-hidden />
-        <h1 className="mt-5 font-heading text-2xl font-bold tracking-tight">{title}</h1>
-        <p className="mt-3 text-muted-foreground">{body}</p>
+      <div className="glass rim rounded-2xl p-8 text-center shadow-glow-lg">
+        <Icon className="mx-auto size-9 text-acm-300" aria-hidden />
+        <h1 className="mt-5 font-heading text-2xl font-bold tracking-tight text-balance">
+          {title}
+        </h1>
+        <p className="mt-3 text-sm text-muted-foreground">{body}</p>
 
         {profile.review_note && (
-          <div className="mt-6 rounded-xl border border-jasmine-deep bg-jasmine-soft p-4 text-left dark:bg-jasmine-deep/10">
-            <p className="text-sm font-medium text-[#6b5410] dark:text-jasmine">
-              Note from the admin
-            </p>
-            <p className="mt-1 text-sm text-[#6b5410] dark:text-jasmine/90">
-              {profile.review_note}
-            </p>
+          <div className="mt-6">
+            <Callout title="Note from the admin">{profile.review_note}</Callout>
           </div>
         )}
 

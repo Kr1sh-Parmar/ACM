@@ -2,7 +2,17 @@ import type { Metadata } from "next";
 import { ScrollText } from "lucide-react";
 import { requireStaff } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { EmptyState } from "@/components/shell/empty-state";
+import { PageHeader } from "@/components/shell/page-header";
 import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export const metadata: Metadata = { title: "Audit log" };
 
@@ -29,56 +39,72 @@ export default async function AuditPage() {
     .order("created_at", { ascending: false })
     .limit(200);
 
+  const rows = entries ?? [];
+
   return (
     <div>
-      <h1 className="font-heading text-2xl font-bold tracking-tight">Audit log</h1>
-      <p className="mt-2 text-muted-foreground">
-        Who did what. Written by the database itself, so nothing can skip it.
-      </p>
+      <PageHeader
+        title="Audit log"
+        description="Who did what. Written by the database itself, so nothing can skip it."
+      />
 
-      {(entries ?? []).length === 0 ? (
-        <div className="mt-10 rounded-2xl border border-dashed py-16 text-center">
-          <ScrollText className="mx-auto size-8 text-muted-foreground" aria-hidden />
-          <p className="mt-4 text-sm text-muted-foreground">Nothing recorded yet.</p>
-        </div>
+      {rows.length === 0 ? (
+        <EmptyState icon={ScrollText} title="Nothing recorded yet">
+          Actions appear here the moment an admin takes one.
+        </EmptyState>
       ) : (
-        <ul className="mt-8 divide-y rounded-2xl border">
-          {(entries ?? []).map((entry) => {
-            const meta = (entry.meta ?? {}) as Meta;
-            return (
-              <li key={entry.id} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-5 py-3">
-                <span className="font-mono text-xs text-muted-foreground">
-                  {new Date(entry.created_at).toLocaleString("en-GB", {
-                    day: "2-digit",
-                    month: "short",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
+        // Solid, not glass: two hundred rows of dense text is exactly where
+        // translucency stops helping and starts costing legibility.
+        <div className="solid rim overflow-hidden rounded-2xl">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[9.5rem]">When</TableHead>
+                <TableHead>Who</TableHead>
+                <TableHead>Action</TableHead>
+                <TableHead className="text-right">Change</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((entry) => {
+                const meta = (entry.meta ?? {}) as Meta;
+                return (
+                  <TableRow key={entry.id}>
+                    <TableCell className="font-mono text-xs text-muted-foreground">
+                      {new Date(entry.created_at).toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </TableCell>
 
-                <span className="font-medium">
-                  {entry.profiles?.full_name ?? "System"}
-                </span>
+                    <TableCell className="font-medium">
+                      {entry.profiles?.full_name ?? "System"}
+                    </TableCell>
 
-                <span className="text-sm text-muted-foreground">
-                  {ACTION_LABEL[entry.action] ?? entry.action}
-                </span>
+                    <TableCell className="whitespace-normal text-muted-foreground">
+                      {ACTION_LABEL[entry.action] ?? entry.action}
+                      {meta.note && (
+                        <span className="mt-1 block max-w-prose text-xs text-jasmine/80 italic">
+                          &ldquo;{meta.note}&rdquo;
+                        </span>
+                      )}
+                    </TableCell>
 
-                {meta.to && (
-                  <Badge variant="outline" className="font-mono text-xs">
-                    {meta.from} → {meta.to}
-                  </Badge>
-                )}
-
-                {meta.note && (
-                  <span className="w-full text-sm text-muted-foreground">
-                    &ldquo;{meta.note}&rdquo;
-                  </span>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+                    <TableCell className="text-right">
+                      {meta.to && (
+                        <Badge variant="outline" className="font-mono text-xs">
+                          {meta.from} → {meta.to}
+                        </Badge>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       )}
     </div>
   );

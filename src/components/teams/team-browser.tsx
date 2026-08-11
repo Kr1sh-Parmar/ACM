@@ -10,6 +10,8 @@ import { SkillSlots } from "@/components/teams/skill-slots";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { NativeSelect } from "@/components/ui/native-select";
+import { coverageRim } from "@/components/shell/coverage";
 import {
   Dialog,
   DialogContent,
@@ -73,9 +75,6 @@ export function TeamBrowser({
     return true;
   });
 
-  const selectClass =
-    "h-9 rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50";
-
   return (
     <>
       <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -87,10 +86,10 @@ export function TeamBrowser({
           aria-label="Find a team by name"
         />
 
-        <select
+        <NativeSelect
           value={skillFilter}
           onChange={(e) => setSkillFilter(e.target.value)}
-          className={selectClass}
+          className="w-auto"
           aria-label="Filter by a skill the team still needs"
         >
           <option value="">Needs any skill</option>
@@ -99,13 +98,13 @@ export function TeamBrowser({
               Needs {skill}
             </option>
           ))}
-        </select>
+        </NativeSelect>
 
         {tracks.length > 0 && (
-          <select
+          <NativeSelect
             value={trackFilter}
             onChange={(e) => setTrackFilter(e.target.value)}
-            className={selectClass}
+            className="w-auto"
             aria-label="Filter by track"
           >
             <option value="">Any track</option>
@@ -114,7 +113,7 @@ export function TeamBrowser({
                 {track}
               </option>
             ))}
-          </select>
+          </NativeSelect>
         )}
 
         <label className="flex items-center gap-2 text-sm">
@@ -129,7 +128,7 @@ export function TeamBrowser({
       </div>
 
       {visible.length === 0 ? (
-        <div className="mt-6 rounded-2xl border border-dashed py-14 text-center">
+        <div className="mt-6 rounded-2xl border border-dashed border-jasmine/25 bg-white/2 py-14 text-center">
           <SearchX className="mx-auto size-7 text-muted-foreground" aria-hidden />
           <p className="mt-3 font-heading font-semibold">No teams match that</p>
           <p className="mt-1 text-sm text-muted-foreground">Try clearing a filter.</p>
@@ -139,17 +138,23 @@ export function TeamBrowser({
           {visible.map((team) => {
             const onIt = team.members.some((m) => m.id === currentMemberId);
             return (
-              <li key={team.id} className="flex flex-col rounded-2xl border bg-card p-5">
+              // The rim warms toward jasmine as this team's skill coverage
+              // drops, so a short-staffed team stands out across the grid.
+              <li
+                key={team.id}
+                className="glass rim flex flex-col rounded-2xl p-5 shadow-glow-md"
+                style={coverageRim(team.covered.length, team.required.length)}
+              >
                 <div className="flex items-start justify-between gap-3">
                   <Link
                     href={`/events/${eventId}/teams/${team.id}`}
-                    className="font-heading text-lg font-semibold hover:text-acm-600 dark:hover:text-acm-300"
+                    className="font-heading text-lg font-semibold hover:text-acm-200"
                   >
                     {team.name}
                   </Link>
                   <span
                     className={`shrink-0 font-mono text-xs ${
-                      team.isFull ? "text-muted-foreground" : "text-jasmine-deep"
+                      team.isFull ? "text-muted-foreground" : "text-jasmine"
                     }`}
                   >
                     {team.isFull ? "Full" : `${team.openSlots} open`}

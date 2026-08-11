@@ -7,16 +7,14 @@ import type { Event } from "@/lib/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
-
-const SELECT_CLASS =
-  "h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50";
 
 export function EventForm({ event }: { event?: Event }) {
   const [state, formAction, pending] = useActionState<EventFormState, FormData>(saveEvent, {});
 
   return (
-    <form action={formAction} className="max-w-2xl space-y-6">
+    <form action={formAction} className="space-y-6">
       {event && <input type="hidden" name="event_id" value={event.id} />}
 
       <div className="space-y-2">
@@ -35,16 +33,15 @@ export function EventForm({ event }: { event?: Event }) {
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="type">Type</Label>
-          <select
+          <NativeSelect
             id="type"
             name="type"
             required
             defaultValue={event?.type ?? "hackathon"}
-            className={SELECT_CLASS}
           >
             <option value="hackathon">Hackathon</option>
             <option value="project">Project</option>
-          </select>
+          </NativeSelect>
           <p className="text-xs text-muted-foreground">
             In a hackathon a member can only be on one team. Projects allow several.
           </p>
@@ -52,16 +49,11 @@ export function EventForm({ event }: { event?: Event }) {
 
         <div className="space-y-2">
           <Label htmlFor="status">Status</Label>
-          <select
-            id="status"
-            name="status"
-            defaultValue={event?.status ?? "draft"}
-            className={SELECT_CLASS}
-          >
+          <NativeSelect id="status" name="status" defaultValue={event?.status ?? "draft"}>
             <option value="draft">Draft — only staff can see it</option>
             <option value="open">Open — members can form teams</option>
             <option value="closed">Closed — no new teams or joins</option>
-          </select>
+          </NativeSelect>
         </div>
       </div>
 
@@ -152,7 +144,7 @@ export function EventForm({ event }: { event?: Event }) {
       {state.error && (
         <p
           role="alert"
-          className="flex items-start gap-2 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          className="flex items-start gap-2 rounded-lg bg-destructive/12 px-3 py-2.5 text-sm text-destructive ring-1 ring-destructive/25 ring-inset"
         >
           <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
           {state.error}

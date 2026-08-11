@@ -17,12 +17,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div>
-      <div className="mb-8 border-b pb-4">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-acm-600 dark:text-acm-300">
-          Admin
-        </p>
+      <div className="mb-8 border-b border-white/8 pb-4">
+        <p className="font-mono text-xs tracking-[0.2em] text-acm-300 uppercase">Admin</p>
         <div className="mt-3">
-          <AppNav links={SECTIONS} />
+          <AppNav id="admin" links={SECTIONS} />
         </div>
       </div>
       {children}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { requireStaff } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { SkillModeration, type ModeratedSkill } from "@/components/admin/skill-moderation";
+import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "Skill tags" };
 
@@ -33,16 +34,18 @@ export default async function AdminSkillsPage() {
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-bold tracking-tight">Skill tags</h1>
-      <p className="mt-2 text-muted-foreground">
-        {rows.length} active tags
-        {custom > 0 && `, ${custom} added by members`}. Member-added tags are listed first
-        — they&apos;re where duplicates usually appear.
-      </p>
+      <PageHeader
+        title="Skill tags"
+        description={
+          <>
+            {rows.length} active tags
+            {custom > 0 && `, ${custom} added by members`}. Member-added tags are listed
+            first — they&apos;re where duplicates usually appear.
+          </>
+        }
+      />
 
-      <div className="mt-8">
-        <SkillModeration skills={rows} />
-      </div>
+      <SkillModeration skills={rows} />
     </div>
   );
 }

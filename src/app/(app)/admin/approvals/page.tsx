@@ -3,6 +3,8 @@ import { Inbox } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { requireStaff } from "@/lib/auth";
 import { ReviewCard } from "@/components/admin/review-card";
+import { EmptyState } from "@/components/shell/empty-state";
+import { PageHeader } from "@/components/shell/page-header";
 import type { Profile } from "@/lib/supabase/types";
 
 export const metadata: Metadata = { title: "Approvals" };
@@ -23,22 +25,18 @@ export default async function ApprovalsPage() {
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-bold tracking-tight">Approval queue</h1>
-      <p className="mt-2 text-muted-foreground">
-        Oldest first. Nothing opens up for a member until you approve them.
-      </p>
+      <PageHeader
+        title="Approval queue"
+        description="Oldest first. Nothing opens up for a member until you approve them."
+      />
 
       {queue.length === 0 ? (
-        <div className="mt-10 rounded-2xl border border-dashed py-16 text-center">
-          <Inbox className="mx-auto size-8 text-muted-foreground" aria-hidden />
-          <p className="mt-4 font-heading text-lg font-semibold">The queue is empty</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            New profiles land here the moment someone signs up.
-          </p>
-        </div>
+        <EmptyState icon={Inbox} title="The queue is empty">
+          New profiles land here the moment someone signs up.
+        </EmptyState>
       ) : (
         <>
-          <ul className="mt-8 grid gap-5 lg:grid-cols-2">
+          <ul className="grid gap-5 lg:grid-cols-2">
             {waiting.map((member) => (
               <ReviewCard key={member.id} member={member} />
             ))}

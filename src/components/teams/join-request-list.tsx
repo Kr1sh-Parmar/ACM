@@ -28,7 +28,7 @@ export function JoinRequestList({
 
   if (requests.length === 0) {
     return (
-      <div className="mt-4 rounded-2xl border border-dashed py-10 text-center">
+      <div className="mt-4 rounded-2xl border border-dashed border-jasmine/25 bg-white/2 py-10 text-center">
         <Inbox className="mx-auto size-6 text-muted-foreground" aria-hidden />
         <p className="mt-3 text-sm text-muted-foreground">
           Nobody has asked to join yet.

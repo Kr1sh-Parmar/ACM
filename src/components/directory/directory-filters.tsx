@@ -6,12 +6,10 @@ import { Search, X } from "lucide-react";
 import { BRANCHES, DEPARTMENTS, DESIGNATIONS, PROFICIENCIES, YEARS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import { Badge } from "@/components/ui/badge";
 
 export type FilterSkill = { id: string; name: string; category: string };
-
-const SELECT_CLASS =
-  "h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50";
 
 export function DirectoryFilters({ skills }: { skills: FilterSkill[] }) {
   const router = useRouter();
@@ -34,7 +32,7 @@ export function DirectoryFilters({ skills }: { skills: FilterSkill[] }) {
   const hasFilters = [...params.keys()].length > 0;
 
   return (
-    <div className="space-y-4 rounded-2xl border bg-card p-5">
+    <div className="glass rim space-y-4 rounded-2xl p-5 shadow-glow-md">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -57,9 +55,9 @@ export function DirectoryFilters({ skills }: { skills: FilterSkill[] }) {
         <label htmlFor="skill" className="text-sm font-medium">
           Has all of these skills
         </label>
-        <select
+        <NativeSelect
           id="skill"
-          className={`mt-2 ${SELECT_CLASS}`}
+          className="mt-2"
           value=""
           disabled={pending}
           onChange={(e) => {
@@ -75,7 +73,7 @@ export function DirectoryFilters({ skills }: { skills: FilterSkill[] }) {
                 {s.name}
               </option>
             ))}
-        </select>
+        </NativeSelect>
 
         {selectedSkills.length > 0 && (
           <ul className="mt-3 flex flex-wrap gap-2">
@@ -107,9 +105,9 @@ export function DirectoryFilters({ skills }: { skills: FilterSkill[] }) {
         <label htmlFor="prof" className="text-sm font-medium">
           At least
         </label>
-        <select
+        <NativeSelect
           id="prof"
-          className={`mt-2 ${SELECT_CLASS}`}
+          className="mt-2"
           value={params.get("prof") ?? ""}
           disabled={pending}
           onChange={(e) => set("prof", e.target.value)}
@@ -120,16 +118,16 @@ export function DirectoryFilters({ skills }: { skills: FilterSkill[] }) {
               {p[0].toUpperCase() + p.slice(1)}
             </option>
           ))}
-        </select>
+        </NativeSelect>
       </div>
 
       <div>
         <label htmlFor="department" className="text-sm font-medium">
           Department
         </label>
-        <select
+        <NativeSelect
           id="department"
-          className={`mt-2 ${SELECT_CLASS}`}
+          className="mt-2"
           value={params.get("department") ?? ""}
           disabled={pending}
           onChange={(e) => set("department", e.target.value)}
@@ -140,16 +138,16 @@ export function DirectoryFilters({ skills }: { skills: FilterSkill[] }) {
               {d}
             </option>
           ))}
-        </select>
+        </NativeSelect>
       </div>
 
       <div>
         <label htmlFor="designation" className="text-sm font-medium">
           Officer position
         </label>
-        <select
+        <NativeSelect
           id="designation"
-          className={`mt-2 ${SELECT_CLASS}`}
+          className="mt-2"
           value={params.get("designation") ?? ""}
           disabled={pending}
           onChange={(e) => set("designation", e.target.value)}
@@ -160,16 +158,16 @@ export function DirectoryFilters({ skills }: { skills: FilterSkill[] }) {
               {d}
             </option>
           ))}
-        </select>
+        </NativeSelect>
       </div>
 
       <div>
         <label htmlFor="branch" className="text-sm font-medium">
           Branch
         </label>
-        <select
+        <NativeSelect
           id="branch"
-          className={`mt-2 ${SELECT_CLASS}`}
+          className="mt-2"
           value={params.get("branch") ?? ""}
           disabled={pending}
           onChange={(e) => set("branch", e.target.value)}
@@ -180,16 +178,16 @@ export function DirectoryFilters({ skills }: { skills: FilterSkill[] }) {
               {b}
             </option>
           ))}
-        </select>
+        </NativeSelect>
       </div>
 
       <div>
         <label htmlFor="year" className="text-sm font-medium">
           Year
         </label>
-        <select
+        <NativeSelect
           id="year"
-          className={`mt-2 ${SELECT_CLASS}`}
+          className="mt-2"
           value={params.get("year") ?? ""}
           disabled={pending}
           onChange={(e) => set("year", e.target.value)}
@@ -200,13 +198,13 @@ export function DirectoryFilters({ skills }: { skills: FilterSkill[] }) {
               {y.label}
             </option>
           ))}
-        </select>
+        </NativeSelect>
       </div>
 
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
-          className="size-4 rounded border-input accent-acm-500"
+          className="size-4 rounded border-input accent-acm-400"
           checked={params.get("open") === "1"}
           disabled={pending}
           onChange={(e) => set("open", e.target.checked ? "1" : "")}

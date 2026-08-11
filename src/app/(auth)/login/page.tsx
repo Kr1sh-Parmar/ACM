@@ -12,13 +12,13 @@ export default function LoginPage() {
   const [state, formAction, pending] = useActionState<AuthState, FormData>(signIn, {});
 
   return (
-    <div className="rounded-2xl border bg-card p-6 shadow-lg shadow-acm-900/5 dark:shadow-black/40">
+    <div className="glass rim rounded-2xl p-7 shadow-glow-lg">
       <h1 className="font-heading text-2xl font-bold tracking-tight">Sign in</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <p className="mt-1.5 text-sm text-muted-foreground">
         Welcome back to the chapter hub.
       </p>
 
-      <form action={formAction} className="mt-6 space-y-4">
+      <form action={formAction} className="mt-7 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -45,7 +45,7 @@ export default function LoginPage() {
         {state.error && (
           <p
             role="alert"
-            className="flex items-start gap-2 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            className="flex items-start gap-2 rounded-lg bg-destructive/12 px-3 py-2.5 text-sm text-destructive ring-1 ring-destructive/25 ring-inset"
           >
             <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
             {state.error}
@@ -59,7 +59,7 @@ export default function LoginPage() {
 
       <p className="mt-6 text-sm text-muted-foreground">
         No account yet?{" "}
-        <Link href="/signup" className="font-medium text-acm-600 hover:underline dark:text-acm-300">
+        <Link href="/signup" className="font-medium text-acm-300 hover:underline">
           Create your profile
         </Link>
       </p>

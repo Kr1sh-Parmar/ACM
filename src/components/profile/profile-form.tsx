@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { NativeSelect } from "@/components/ui/native-select";
 
 type Props = {
   profile: Profile;
@@ -58,11 +59,10 @@ export function ProfileForm({ profile, redirectTo, submitLabel }: Props) {
 
         <div className="space-y-2">
           <Label htmlFor="department">Department</Label>
-          <select
+          <NativeSelect
             id="department"
             name="department"
             defaultValue={profile.department ?? ""}
-            className="h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <option value="">Not in a department</option>
             {DEPARTMENTS.map((d) => (
@@ -70,16 +70,15 @@ export function ProfileForm({ profile, redirectTo, submitLabel }: Props) {
                 {d}
               </option>
             ))}
-          </select>
+          </NativeSelect>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="designation">Officer position</Label>
-          <select
+          <NativeSelect
             id="designation"
             name="designation"
             defaultValue={profile.designation ?? ""}
-            className="h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <option value="">Not an officer</option>
             {DESIGNATIONS.map((d) => (
@@ -87,7 +86,7 @@ export function ProfileForm({ profile, redirectTo, submitLabel }: Props) {
                 {d}
               </option>
             ))}
-          </select>
+          </NativeSelect>
           {/* Neither field is individually required, but the pair is — most
               members hold no officer post, and the seven who do may sit outside
               any department. The server enforces "at least one". */}
@@ -98,12 +97,11 @@ export function ProfileForm({ profile, redirectTo, submitLabel }: Props) {
 
         <div className="space-y-2">
           <Label htmlFor="year">Year of study</Label>
-          <select
+          <NativeSelect
             id="year"
             name="year"
             required
             defaultValue={profile.year ?? ""}
-            className="h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <option value="" disabled>
               Select a year
@@ -113,17 +111,16 @@ export function ProfileForm({ profile, redirectTo, submitLabel }: Props) {
                 {y.label}
               </option>
             ))}
-          </select>
+          </NativeSelect>
         </div>
 
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="branch">Branch</Label>
-          <select
+          <NativeSelect
             id="branch"
             name="branch"
             required
             defaultValue={profile.branch ?? ""}
-            className="h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <option value="" disabled>
               Select a branch
@@ -133,7 +130,7 @@ export function ProfileForm({ profile, redirectTo, submitLabel }: Props) {
                 {b}
               </option>
             ))}
-          </select>
+          </NativeSelect>
         </div>
 
         <div className="space-y-2">
@@ -223,7 +220,7 @@ export function ProfileForm({ profile, redirectTo, submitLabel }: Props) {
       )}
 
       {state.saved && (
-        <p className="flex items-center gap-2 rounded-lg bg-acm-50 px-3 py-2 text-sm text-acm-700 dark:bg-acm-900/40 dark:text-acm-200">
+        <p className="flex items-center gap-2 rounded-lg bg-acm-500/12 px-3 py-2 text-sm text-acm-200">
           <Check className="size-4 shrink-0" aria-hidden />
           Profile saved.
         </p>

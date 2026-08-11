@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 import { setEventStatus } from "@/lib/actions/events";
 import type { Enums } from "@/lib/supabase/types";
+import { NativeSelect } from "@/components/ui/native-select";
 
 const STATUSES: Enums<"event_status">[] = ["draft", "open", "closed"];
 
@@ -28,7 +29,7 @@ export function EventStatusControl({
       <label className="sr-only" htmlFor={`status-${eventId}`}>
         Event status
       </label>
-      <select
+      <NativeSelect
         id={`status-${eventId}`}
         defaultValue={status}
         disabled={pending}
@@ -43,14 +44,14 @@ export function EventStatusControl({
             else toast.success(`Event is now ${LABEL[next as Enums<"event_status">].toLowerCase()}.`);
           });
         }}
-        className="h-8 rounded-md border border-input bg-transparent px-2 text-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        className="h-8 w-auto px-2 text-xs"
       >
         {STATUSES.map((s) => (
           <option key={s} value={s}>
             {LABEL[s]}
           </option>
         ))}
-      </select>
+      </NativeSelect>
     </>
   );
 }

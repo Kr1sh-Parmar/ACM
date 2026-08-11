@@ -38,9 +38,11 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full`}
-      suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
+        {/* The ambient field every glass surface is composited over. Fixed and
+            behind the content, so it drifts under the page rather than with it. */}
+        <div aria-hidden className="aurora" />
         {children}
         <Toaster richColors position="top-center" />
       </body>

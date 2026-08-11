@@ -8,6 +8,7 @@ import { buildTeamViews, type TeamMemberView } from "@/lib/teams";
 import type { Proficiency } from "@/lib/constants";
 import { TeamBrowser } from "@/components/teams/team-browser";
 import { CreateTeamDialog } from "@/components/teams/create-team-dialog";
+import { EmptyState } from "@/components/shell/empty-state";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = { title: "Event" };
@@ -84,9 +85,11 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
             </Badge>
             {!isOpen && <Badge variant="secondary">Registration closed</Badge>}
           </div>
-          <h1 className="mt-3 font-heading text-3xl font-bold tracking-tight">{event.title}</h1>
+          <h1 className="mt-3 font-heading text-3xl font-bold tracking-tight text-balance">
+            {event.title}
+          </h1>
           {event.description && (
-            <p className="mt-3 max-w-2xl text-muted-foreground">{event.description}</p>
+            <p className="mt-3 max-w-2xl text-sm text-muted-foreground">{event.description}</p>
           )}
           <p className="mt-4 font-mono text-sm text-muted-foreground">
             Teams of {event.team_min}–{event.team_max}
@@ -104,8 +107,8 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
       </div>
 
       {myTeam && (
-        <div className="mt-8 rounded-2xl border border-acm-300 bg-acm-50 p-5 dark:bg-acm-900/40">
-          <p className="text-sm text-acm-800 dark:text-acm-200">
+        <div className="rim mt-8 rounded-2xl border border-acm-300/25 bg-acm-500/12 p-5">
+          <p className="text-sm text-acm-100">
             You&apos;re on{" "}
             <Link
               href={`/events/${event.id}/teams/${myTeam.id}`}
@@ -119,22 +122,19 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
       )}
 
       <section className="mt-10">
-        <div className="flex items-center gap-2">
-          <Users className="size-5 text-muted-foreground" aria-hidden />
+        <div className="flex items-center gap-2.5">
+          <Users className="size-[1.1rem] text-acm-300" aria-hidden />
           <h2 className="font-heading text-xl font-semibold">
             {views.length} {views.length === 1 ? "team" : "teams"}
           </h2>
         </div>
 
         {views.length === 0 ? (
-          <div className="mt-6 rounded-2xl border border-dashed py-16 text-center">
-            <p className="font-heading text-lg font-semibold">No teams yet</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {canStartTeam
-                ? "Start the first one and list what you're looking for."
-                : "Nothing here yet."}
-            </p>
-          </div>
+          <EmptyState className="mt-6" icon={Users} title="No teams yet">
+            {canStartTeam
+              ? "Start the first one and list what you're looking for."
+              : "Nothing here yet."}
+          </EmptyState>
         ) : (
           <TeamBrowser
             eventId={event.id}

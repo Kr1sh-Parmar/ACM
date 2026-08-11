@@ -41,7 +41,9 @@ export function PendingBadge({ initialCount }: { initialCount: number }) {
   if (count === 0) return null;
 
   return (
-    <span className="ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-acm-500 px-1.5 font-mono text-[11px] font-medium text-white">
+    // Jasmine, not blue: a queue is something waiting on a person, which is
+    // what jasmine means everywhere else in the app.
+    <span className="relative ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-jasmine px-1.5 font-mono text-[11px] font-medium text-[#3a2f08]">
       {count}
     </span>
   );

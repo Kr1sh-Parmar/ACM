@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { buildTeamViews, type TeamMemberView } from "@/lib/teams";
 import { roleLabel, type Proficiency } from "@/lib/constants";
 import { SkillSlots } from "@/components/teams/skill-slots";
+import { coverageRim } from "@/components/shell/coverage";
 import { JoinRequestList } from "@/components/teams/join-request-list";
 import { TeamMemberActions } from "@/components/teams/team-member-actions";
 import { Badge } from "@/components/ui/badge";
@@ -133,12 +134,14 @@ export default async function TeamPage({
 
       <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-heading text-3xl font-bold tracking-tight">{view.name}</h1>
+          <h1 className="font-heading text-3xl font-bold tracking-tight text-balance">
+            {view.name}
+          </h1>
           {view.track && <p className="mt-1 font-mono text-sm text-muted-foreground">{view.track}</p>}
         </div>
         <span
           className={`font-mono text-sm ${
-            view.isFull ? "text-muted-foreground" : "text-jasmine-deep"
+            view.isFull ? "text-muted-foreground" : "text-jasmine"
           }`}
         >
           {view.members.length}/{event.team_max}
@@ -146,9 +149,16 @@ export default async function TeamPage({
         </span>
       </div>
 
-      {view.description && <p className="mt-4 max-w-2xl text-muted-foreground">{view.description}</p>}
+      {view.description && (
+        <p className="mt-4 max-w-2xl text-sm text-muted-foreground">{view.description}</p>
+      )}
 
-      <section className="mt-10">
+      {/* The signature in its home position: this card's rim warms toward
+          jasmine as the team's skill coverage drops. */}
+      <section
+        className="glass rim mt-10 rounded-2xl p-6 shadow-glow-md"
+        style={coverageRim(view.covered.size, view.required.length)}
+      >
         <h2 className="font-heading text-lg font-semibold">Skills this team asked for</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Solid means someone on the team covers it. Dashed means it&apos;s still open.
@@ -160,13 +170,13 @@ export default async function TeamPage({
 
       <section className="mt-12">
         <h2 className="font-heading text-lg font-semibold">Members</h2>
-        <ul className="mt-4 divide-y rounded-2xl border">
+        <ul className="solid rim mt-4 divide-y divide-white/7 overflow-hidden rounded-2xl">
           {view.members.map((member) => (
             <li key={member.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
               <MemberAvatar
                 id={member.id}
                 name={member.full_name}
-                className="size-10 border"
+                className="size-10 ring-1 ring-white/15"
               />
 
               <div className="min-w-0 flex-1">
@@ -187,7 +197,7 @@ export default async function TeamPage({
                     {member.skills.slice(0, 5).map((skill) => (
                       <li
                         key={skill.name}
-                        className="rounded-full border px-2 py-0.5 font-mono text-xs text-muted-foreground"
+                        className="rounded-full border border-white/12 bg-white/4 px-2.5 py-0.5 font-mono text-xs text-muted-foreground"
                       >
                         {skill.name}
                       </li>
@@ -242,12 +252,13 @@ export default async function TeamPage({
             {suggestions.map((person) => (
               <li
                 key={person.id}
-                className="flex items-center gap-3 rounded-2xl border bg-card p-4"
+                className="glass rim flex items-center gap-3 rounded-2xl p-4 shadow-glow-sm"
+                style={{ "--rim-hue": "45deg" } as React.CSSProperties}
               >
                 <MemberAvatar
                   id={person.id}
                   name={person.full_name}
-                  className="size-9 border"
+                  className="size-9 ring-1 ring-white/15"
                 />
                 <div className="min-w-0">
                   <p className="truncate font-medium">{person.full_name}</p>

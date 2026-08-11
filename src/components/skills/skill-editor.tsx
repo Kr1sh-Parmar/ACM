@@ -15,6 +15,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { NativeSelect } from "@/components/ui/native-select";
 
 export type SkillOption = { id: string; name: string; category: string };
 export type MemberSkill = { skill_id: string; name: string; proficiency: Proficiency };
@@ -81,7 +82,7 @@ export function SkillEditor({
   return (
     <div className="space-y-4">
       {memberSkills.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-6 text-center">
+        <div className="rounded-xl border border-dashed border-jasmine/25 bg-white/2 p-6 text-center">
           <Sparkles className="mx-auto size-6 text-muted-foreground" aria-hidden />
           <p className="mt-3 text-sm font-medium">No skills listed yet</p>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -89,7 +90,7 @@ export function SkillEditor({
           </p>
         </div>
       ) : (
-        <ul className="divide-y rounded-xl border">
+        <ul className="solid rim divide-y divide-white/7 overflow-hidden rounded-xl">
           {memberSkills.map((skill) => (
             <li key={skill.skill_id} className="flex items-center gap-3 px-4 py-3">
               <span className="min-w-0 flex-1 truncate font-mono text-sm">{skill.name}</span>
@@ -97,7 +98,7 @@ export function SkillEditor({
               <label className="sr-only" htmlFor={`prof-${skill.skill_id}`}>
                 Proficiency in {skill.name}
               </label>
-              <select
+              <NativeSelect
                 id={`prof-${skill.skill_id}`}
                 defaultValue={skill.proficiency}
                 disabled={pending}
@@ -107,14 +108,14 @@ export function SkillEditor({
                   data.set("proficiency", e.target.value);
                   run(() => addSkill(data));
                 }}
-                className="h-8 rounded-md border border-input bg-transparent px-2 text-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                className="h-8 w-auto px-2 text-xs"
               >
                 {PROFICIENCIES.map((p) => (
                   <option key={p} value={p}>
                     {PROFICIENCY_LABEL[p]}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
 
               <Button
                 type="button"

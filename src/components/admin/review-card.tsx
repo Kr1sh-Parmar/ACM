@@ -30,7 +30,7 @@ export function ReviewCard({ member }: { member: Profile }) {
   const [armed, setArmed] = useState<"rejected" | "needs_info" | null>(null);
 
   return (
-    <li className="rounded-2xl border bg-card p-5 shadow-sm">
+    <li className="glass rim rounded-2xl p-5 shadow-glow-md">
       <form action={formAction}>
         <input type="hidden" name="member_id" value={member.id} />
 

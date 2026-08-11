@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { AnnouncementManager } from "@/components/admin/announcement-manager";
+import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "Announcements" };
 
@@ -17,14 +18,12 @@ export default async function AnnouncementsPage() {
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-bold tracking-tight">Announcements</h1>
-      <p className="mt-2 text-muted-foreground">
-        Posted to every approved member&apos;s dashboard. Pinned ones sit at the top.
-      </p>
+      <PageHeader
+        title="Announcements"
+        description="Posted to every approved member's dashboard. Pinned ones sit at the top."
+      />
 
-      <div className="mt-8">
-        <AnnouncementManager announcements={announcements ?? []} />
-      </div>
+      <AnnouncementManager announcements={announcements ?? []} />
     </div>
   );
 }

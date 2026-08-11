@@ -68,7 +68,7 @@ export function BirthdayPanel({ birthdays }: { birthdays: Birthday[] }) {
         return (
           <TabsContent key={range.key} value={range.key}>
             {list.length === 0 ? (
-              <div className="rounded-2xl border border-dashed py-14 text-center">
+              <div className="rounded-2xl border border-dashed border-jasmine/25 bg-white/2 py-14 text-center">
                 <Cake className="mx-auto size-7 text-muted-foreground" aria-hidden />
                 <p className="mt-3 text-sm text-muted-foreground">
                   No birthdays {range.label.toLowerCase()}.

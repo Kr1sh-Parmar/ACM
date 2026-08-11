@@ -12,13 +12,13 @@ export default function SignupPage() {
   const [state, formAction, pending] = useActionState<AuthState, FormData>(signUp, {});
 
   return (
-    <div className="rounded-2xl border bg-card p-6 shadow-lg shadow-acm-900/5 dark:shadow-black/40">
+    <div className="glass rim rounded-2xl p-7 shadow-glow-lg">
       <h1 className="font-heading text-2xl font-bold tracking-tight">Create your profile</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <p className="mt-1.5 text-sm text-muted-foreground">
         A chapter admin reviews new profiles before access opens.
       </p>
 
-      <form action={formAction} className="mt-6 space-y-4">
+      <form action={formAction} className="mt-7 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="full_name">Full name</Label>
           <Input
@@ -59,7 +59,7 @@ export default function SignupPage() {
         {state.error && (
           <p
             role="alert"
-            className="flex items-start gap-2 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            className="flex items-start gap-2 rounded-lg bg-destructive/12 px-3 py-2.5 text-sm text-destructive ring-1 ring-destructive/25 ring-inset"
           >
             <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
             {state.error}
@@ -73,7 +73,7 @@ export default function SignupPage() {
 
       <p className="mt-6 text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-acm-600 hover:underline dark:text-acm-300">
+        <Link href="/login" className="font-medium text-acm-300 hover:underline">
           Sign in
         </Link>
       </p>

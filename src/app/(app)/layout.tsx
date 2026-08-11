@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogOut } from "lucide-react";
 import { MemberAvatar } from "@/components/shell/member-avatar";
 import { createClient } from "@/lib/supabase/server";
 import { requireApproved } from "@/lib/auth";
@@ -38,40 +39,43 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-6">
+      <header className="glass sticky top-0 z-40 border-b border-white/8">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-5 sm:gap-6 sm:px-6">
           <Link
             href="/dashboard"
             className="shrink-0 font-heading text-base font-bold tracking-tight"
           >
-            <span className="text-acm-500">ACM</span> Chapter
+            <span className="text-acm-300">ACM</span> Chapter
           </Link>
 
-          <AppNav links={links} />
+          <AppNav id="primary" links={links} />
 
-          <div className="ml-auto flex shrink-0 items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-1.5">
             <Link
               href="/profile"
-              className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-accent"
+              className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-surface-2"
             >
               <MemberAvatar
                 id={profile.id}
                 name={profile.full_name}
-                className="size-7 border"
+                className="size-7 ring-1 ring-white/15"
               />
               <span className="hidden sm:inline">{profile.full_name.split(" ")[0]}</span>
             </Link>
 
             <form action={signOut}>
-              <Button type="submit" variant="ghost" size="sm">
-                Sign out
+              <Button type="submit" variant="ghost" size="icon-sm" title="Sign out">
+                <LogOut aria-hidden />
+                <span className="sr-only">Sign out</span>
               </Button>
             </form>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-10">{children}</main>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-10 sm:px-6 sm:py-12">
+        {children}
+      </main>
     </>
   );
 }

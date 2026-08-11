@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { revokeAccess, setAdminRole } from "@/lib/actions/members";
 import type { Enums } from "@/lib/supabase/types";
 import { Button } from "@/components/ui/button";
+import { NativeSelect } from "@/components/ui/native-select";
 
 const ROLE_OPTIONS: { value: string; label: string }[] = [
   { value: "", label: "Member" },
@@ -36,11 +37,11 @@ export function MemberRowActions({
     });
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center justify-end gap-2">
       <label className="sr-only" htmlFor={`role-${memberId}`}>
         Role for {memberName}
       </label>
-      <select
+      <NativeSelect
         id={`role-${memberId}`}
         defaultValue={adminRole ?? ""}
         // A super admin changing their own role could lock everyone out.
@@ -58,14 +59,14 @@ export function MemberRowActions({
           data.set("admin_role", e.target.value);
           run(() => setAdminRole(data), `Updated ${memberName}.`);
         }}
-        className="h-8 rounded-md border border-input bg-transparent px-2 text-xs outline-none disabled:opacity-50 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        className="h-8 w-auto px-2 text-xs"
       >
         {ROLE_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}
-      </select>
+      </NativeSelect>
 
       {!isSelf && (
         <Button

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { NativeSelect } from "@/components/ui/native-select";
 import {
   Dialog,
   DialogContent,
@@ -76,28 +77,22 @@ export function CreateTeamDialog({
           {tracks.length > 0 && (
             <div className="space-y-2">
               <Label htmlFor="track">Track</Label>
-              <select
-                id="track"
-                name="track"
-                defaultValue=""
-                className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-              >
+              <NativeSelect id="track" name="track" defaultValue="">
                 <option value="">No track</option>
                 {tracks.map((track) => (
                   <option key={track} value={track}>
                     {track}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
             </div>
           )}
 
           <div className="space-y-2">
             <Label htmlFor="skill-picker">Skills you need</Label>
-            <select
+            <NativeSelect
               id="skill-picker"
               value=""
-              className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
               onChange={(e) => {
                 const skill = skills.find((s) => s.id === e.target.value);
                 if (skill) setNeeded((prev) => [...prev, skill]);
@@ -109,7 +104,7 @@ export function CreateTeamDialog({
                   {skill.name}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
 
             {needed.length > 0 && (
               <ul className="flex flex-wrap gap-2 pt-1">

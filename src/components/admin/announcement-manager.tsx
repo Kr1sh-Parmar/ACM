@@ -100,7 +100,7 @@ export function AnnouncementManager({ announcements }: { announcements: Announce
               <li
                 key={note.id}
                 className={`rounded-2xl border p-5 ${
-                  note.pinned ? "border-jasmine-deep bg-jasmine-soft dark:bg-jasmine-deep/10" : ""
+                  note.pinned ? "border-jasmine/25 bg-accent" : ""
                 }`}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">

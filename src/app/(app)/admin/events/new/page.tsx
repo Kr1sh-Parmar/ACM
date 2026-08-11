@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/auth";
 import { EventForm } from "@/components/admin/event-form";
+import { PageHeader } from "@/components/shell/page-header";
 
 export const metadata: Metadata = { title: "Host an event" };
 
@@ -9,11 +10,11 @@ export default async function NewEventPage() {
 
   return (
     <div>
-      <h1 className="font-heading text-2xl font-bold tracking-tight">Host an event</h1>
-      <p className="mt-2 text-muted-foreground">
-        Starts as a draft. Members see nothing until you set it to open.
-      </p>
-      <div className="mt-8">
+      <PageHeader
+        title="Host an event"
+        description="Starts as a draft. Members see nothing until you set it to open."
+      />
+      <div className="glass rim max-w-2xl rounded-2xl p-6 shadow-glow-md sm:p-7">
         <EventForm />
       </div>
     </div>

@@ -4,6 +4,8 @@ import Image from "next/image";
 import { CalendarDays } from "lucide-react";
 import { requireApproved } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { EmptyState } from "@/components/shell/empty-state";
+import { PageHeader } from "@/components/shell/page-header";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = { title: "Events" };
@@ -24,25 +26,22 @@ export default async function EventsPage() {
 
   return (
     <div>
-      <h1 className="font-heading text-3xl font-bold tracking-tight">Events</h1>
-      <p className="mt-2 text-muted-foreground">
-        Hackathons and projects you can build a team for.
-      </p>
+      <PageHeader
+        eyebrow="Build a team"
+        title="Events"
+        description="Hackathons and projects you can build a team for."
+      />
 
       {open.length === 0 && closed.length === 0 ? (
-        <div className="mt-10 rounded-2xl border border-dashed py-16 text-center">
-          <CalendarDays className="mx-auto size-8 text-muted-foreground" aria-hidden />
-          <p className="mt-4 font-heading text-lg font-semibold">Nothing running right now</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            When an admin opens a hackathon or project, it shows up here.
-          </p>
-        </div>
+        <EmptyState icon={CalendarDays} title="Nothing running right now">
+          When an admin opens a hackathon or project, it shows up here.
+        </EmptyState>
       ) : (
         <>
-          {open.length > 0 && <EventGrid events={open} className="mt-8" />}
+          {open.length > 0 && <EventGrid events={open} />}
 
           {closed.length > 0 && (
-            <section className="mt-14">
+            <section className="mt-16">
               <h2 className="font-heading text-xl font-semibold">Finished</h2>
               <EventGrid events={closed} className="mt-5" muted />
             </section>
@@ -79,12 +78,12 @@ function EventGrid({
         <li key={event.id}>
           <Link
             href={`/events/${event.id}`}
-            className={`group block overflow-hidden rounded-2xl border bg-card transition-colors hover:border-acm-300 ${
-              muted ? "opacity-75" : ""
+            className={`glass rim group block overflow-hidden rounded-2xl shadow-glow-md transition-colors hover:bg-surface-2 ${
+              muted ? "opacity-70" : ""
             }`}
           >
             {event.banner_url ? (
-              <div className="relative h-32 w-full bg-muted">
+              <div className="relative h-32 w-full bg-white/5">
                 <Image
                   src={event.banner_url}
                   alt=""
@@ -95,12 +94,14 @@ function EventGrid({
                 />
               </div>
             ) : (
+              // A slice of the same aurora the page sits on, so an event with
+              // no banner still belongs to the set.
               <div
                 className="h-32 w-full"
                 style={{
                   background:
-                    "radial-gradient(24rem 12rem at 20% 0%, var(--mesh-1), transparent 70%)," +
-                    "radial-gradient(18rem 10rem at 90% 100%, var(--mesh-2), transparent 70%)",
+                    "radial-gradient(24rem 12rem at 20% 0%, color-mix(in oklab, var(--acm-500) 45%, transparent), transparent 70%)," +
+                    "radial-gradient(18rem 10rem at 90% 100%, color-mix(in oklab, var(--signal) 22%, transparent), transparent 70%)",
                 }}
               />
             )}
@@ -113,7 +114,7 @@ function EventGrid({
                 {event.status === "closed" && <Badge variant="secondary">Closed</Badge>}
               </div>
 
-              <h2 className="mt-3 font-heading text-lg font-semibold group-hover:text-acm-600 dark:group-hover:text-acm-300">
+              <h2 className="mt-3 font-heading text-lg font-semibold transition-colors group-hover:text-acm-200">
                 {event.title}
               </h2>
 
