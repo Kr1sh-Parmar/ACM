@@ -373,6 +373,45 @@ export type Database = {
           },
         ];
       };
+      team_guests: {
+        Row: {
+          added_by: string | null;
+          created_at: string;
+          full_name: string;
+          id: string;
+          team_id: string;
+        };
+        Insert: {
+          added_by?: string | null;
+          created_at?: string;
+          full_name: string;
+          id?: string;
+          team_id: string;
+        };
+        Update: {
+          added_by?: string | null;
+          created_at?: string;
+          full_name?: string;
+          id?: string;
+          team_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "team_guests_added_by_fkey";
+            columns: ["added_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "team_guests_team_id_fkey";
+            columns: ["team_id"];
+            isOneToOne: false;
+            referencedRelation: "teams";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       team_members: {
         Row: {
           event_id: string;
@@ -496,6 +535,7 @@ export type Database = {
         Args: { approve: boolean; request_id: string };
         Returns: undefined;
       };
+      team_size: { Args: { p_team_id: string }; Returns: number };
       upcoming_birthdays: {
         Args: { days_ahead?: number };
         Returns: {
@@ -539,4 +579,5 @@ export type Skill = Tables<"skills">;
 export type Event = Tables<"events">;
 export type Team = Tables<"teams">;
 export type JoinRequest = Tables<"join_requests">;
+export type TeamGuest = Tables<"team_guests">;
 export type Announcement = Tables<"announcements">;

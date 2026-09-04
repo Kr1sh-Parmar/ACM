@@ -29,6 +29,8 @@ export type BrowsableTeam = {
   track: string | null;
   lead_id: string;
   members: { id: string; full_name: string }[];
+  /** Non-ACM people on the team. They hold slots, so they belong in the count.  */
+  guests: { id: string; full_name: string }[];
   required: string[];
   covered: string[];
   missing: string[];
@@ -181,7 +183,7 @@ export function TeamBrowser({
 
                 <div className="mt-5 flex items-center justify-between gap-3 pt-1">
                   <ul className="flex -space-x-2">
-                    {team.members.slice(0, 5).map((member) => (
+                    {[...team.members, ...team.guests].slice(0, 5).map((member) => (
                       <li key={member.id} title={member.full_name}>
                         <MemberAvatar
                           id={member.id}

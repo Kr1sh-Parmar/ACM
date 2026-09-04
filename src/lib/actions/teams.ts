@@ -145,10 +145,20 @@ export async function withdrawRequest(formData: FormData): Promise<TeamFormState
   const requestId = String(formData.get("request_id") ?? "");
   if (!requestId) return { error: "Missing request." };
 
-  const { error } = await supabase.from("join_requests").delete().eq("id", requestId);
-  if (error) return { error: "That request couldn't be withdrawn." };
+  // A request that was already answered, or isn't yours, is filtered out by RLS
+  // rather than refused — the delete matches zero rows and reports no error, so
+  // the returned rows are what says it actually happened.
+  const { data, error } = await supabase
+    .from("join_requests")
+    .delete()
+    .eq("id", requestId)
+    .select("id");
+
+  if (error || !data?.length) return { error: "That request couldn't be withdrawn." };
 
   revalidatePath("/dashboard");
+  // The event page reads the same rows to decide whether to show "Request sent".
+  revalidatePath("/events/[id]", "layout");
   return {};
 }
 
@@ -227,4 +237,70 @@ export async function disbandTeam(formData: FormData): Promise<TeamFormState> {
 
   revalidatePath(`/events/${eventId}`);
   redirect(`/events/${eventId}`);
+}
+
+/**
+ * Put someone from outside ACM into a slot.
+ *
+ * They aren't a user: no account, no profile, no skills — a name holding a
+ * place so the roster and the open-slot count stay honest. RLS lets only the
+ * lead (or an admin) do this, and only while the event is open; a trigger
+ * refuses once the team is full. The strings below are for the person
+ * clicking, not the rules themselves.
+ */
+export async function addGuest(formData: FormData): Promise<TeamFormState> {
+  const profile = await requireApproved();
+  const supabase = await createClient();
+
+  const teamId = String(formData.get("team_id") ?? "");
+  const eventId = String(formData.get("event_id") ?? "");
+  const fullName = String(formData.get("full_name") ?? "").trim();
+
+  if (!teamId) return { error: "Missing team." };
+  if (fullName.length < 2 || fullName.length > 80) {
+    return { error: "Names are between 2 and 80 characters." };
+  }
+
+  const { error } = await supabase
+    .from("team_guests")
+    .insert({ team_id: teamId, full_name: fullName, added_by: profile.id });
+
+  if (error) {
+    if (error.code === UNIQUE_VIOLATION) {
+      return { error: `${fullName} is already on this team.` };
+    }
+    return {
+      error: error.message.includes("already full")
+        ? "This team is already full."
+        : "That person couldn't be added. Registration may have closed.",
+    };
+  }
+
+  revalidatePath(`/events/${eventId}/teams/${teamId}`);
+  revalidatePath(`/events/${eventId}`);
+  return {};
+}
+
+export async function removeGuest(formData: FormData): Promise<TeamFormState> {
+  await requireApproved();
+  const supabase = await createClient();
+
+  const guestId = String(formData.get("guest_id") ?? "");
+  const teamId = String(formData.get("team_id") ?? "");
+  const eventId = String(formData.get("event_id") ?? "");
+  if (!guestId) return { error: "Missing person." };
+
+  // Same reason withdrawRequest checks the returned rows: RLS filters rather
+  // than refuses, so a delete that matched nothing arrives here looking fine.
+  const { data, error } = await supabase
+    .from("team_guests")
+    .delete()
+    .eq("id", guestId)
+    .select("id");
+
+  if (error || !data?.length) return { error: "That person couldn't be removed." };
+
+  revalidatePath(`/events/${eventId}/teams/${teamId}`);
+  revalidatePath(`/events/${eventId}`);
+  return {};
 }

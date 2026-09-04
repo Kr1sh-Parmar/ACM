@@ -25,7 +25,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
     supabase
       .from("teams")
       .select(
-        "id, name, description, track, lead_id, team_members(member_id), team_required_skills(skills(name))",
+        "id, name, description, track, lead_id, team_members(member_id), team_guests(id, full_name), team_required_skills(skills(name))",
       )
       .eq("event_id", id)
       .order("created_at"),
@@ -72,8 +72,9 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
 
   const isOpen = event.status === "open";
   // In a hackathon you get one team, so once you're on one there is nothing left
-  // to join. Projects have no such limit.
-  const canStartTeam = isOpen && !(event.type === "hackathon" && myTeam);
+  // to start or ask to join. Projects have no such limit — which is why this one
+  // flag drives both affordances.
+  const canJoinAnother = isOpen && !(event.type === "hackathon" && myTeam);
 
   return (
     <div>
@@ -97,7 +98,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
           </p>
         </div>
 
-        {canStartTeam && (
+        {canJoinAnother && (
           <CreateTeamDialog
             eventId={event.id}
             tracks={event.tracks}
@@ -131,7 +132,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
 
         {views.length === 0 ? (
           <EmptyState className="mt-6" icon={Users} title="No teams yet">
-            {canStartTeam
+            {canJoinAnother
               ? "Start the first one and list what you're looking for."
               : "Nothing here yet."}
           </EmptyState>
@@ -147,7 +148,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
               })),
             }))}
             currentMemberId={profile.id}
-            canRequest={isOpen && !myTeam}
+            canRequest={canJoinAnother}
             requestedTeamIds={[...requestedTeamIds]}
           />
         )}

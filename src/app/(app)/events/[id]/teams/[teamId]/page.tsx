@@ -11,6 +11,7 @@ import { SkillSlots } from "@/components/teams/skill-slots";
 import { coverageRim } from "@/components/shell/coverage";
 import { JoinRequestList } from "@/components/teams/join-request-list";
 import { TeamMemberActions } from "@/components/teams/team-member-actions";
+import { AddGuestDialog, RemoveGuestButton } from "@/components/teams/guest-actions";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = { title: "Team" };
@@ -29,7 +30,7 @@ export default async function TeamPage({
     supabase
       .from("teams")
       .select(
-        "id, name, description, track, lead_id, team_members(member_id), team_required_skills(skills(name))",
+        "id, name, description, track, lead_id, team_members(member_id), team_guests(id, full_name), team_required_skills(skills(name))",
       )
       .eq("id", teamId)
       .maybeSingle(),
@@ -144,7 +145,7 @@ export default async function TeamPage({
             view.isFull ? "text-muted-foreground" : "text-jasmine"
           }`}
         >
-          {view.members.length}/{event.team_max}
+          {view.members.length + view.guests.length}/{event.team_max}
           {!view.isFull && ` · ${view.openSlots} open`}
         </span>
       </div>
@@ -217,8 +218,44 @@ export default async function TeamPage({
               />
             </li>
           ))}
+
+          {/* Guests sit in the same list because they occupy the same slots.
+              The badge is what says they are not committee members. */}
+          {view.guests.map((guest) => (
+            <li key={guest.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
+              <MemberAvatar
+                id={guest.id}
+                name={guest.full_name}
+                className="size-10 ring-1 ring-white/15"
+              />
+
+              <div className="min-w-0 flex-1">
+                <p className="flex items-center gap-2 font-medium">
+                  {guest.full_name}
+                  <Badge variant="outline" className="text-xs">
+                    External
+                  </Badge>
+                </p>
+                <p className="text-sm text-muted-foreground">Not an ACM member</p>
+              </div>
+
+              {isLead && (
+                <RemoveGuestButton
+                  guestId={guest.id}
+                  teamId={view.id}
+                  eventId={eventId}
+                  name={guest.full_name}
+                />
+              )}
+            </li>
+          ))}
         </ul>
 
+        {isLead && !view.isFull && event.status === "open" && (
+          <div className="mt-4">
+            <AddGuestDialog teamId={view.id} eventId={eventId} />
+          </div>
+        )}
       </section>
 
       {isLead && (

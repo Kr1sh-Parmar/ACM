@@ -4,6 +4,8 @@ import type { Proficiency } from "@/lib/constants";
  * Shared shape for a team as the browser and team page need it. Built once in
  * `buildTeamViews` so both screens agree on what "covered" and "open" mean.
  */
+export type TeamGuestView = { id: string; full_name: string };
+
 export type TeamMemberView = {
   id: string;
   full_name: string;
@@ -17,6 +19,8 @@ export type TeamView = {
   track: string | null;
   lead_id: string;
   members: TeamMemberView[];
+  /** People on the team who are not in ACM. They hold a slot and nothing else. */
+  guests: TeamGuestView[];
   required: string[];
   /** Required skills at least one current member holds. */
   covered: Set<string>;
@@ -32,6 +36,7 @@ type RawTeam = {
   track: string | null;
   lead_id: string;
   team_members: { member_id: string }[];
+  team_guests: TeamGuestView[];
   team_required_skills: { skills: { name: string } | null }[];
 };
 
@@ -58,7 +63,9 @@ export function buildTeamViews(
     const held = new Set(members.flatMap((m) => m.skills.map((s) => s.name)));
     const covered = new Set(required.filter((skill) => held.has(skill)));
     const missing = required.filter((skill) => !covered.has(skill));
-    const openSlots = Math.max(0, teamMax - members.length);
+    // Guests fill slots exactly like members do — public.team_size() is the
+    // database saying the same thing, and it is the one that actually enforces it.
+    const openSlots = Math.max(0, teamMax - members.length - team.team_guests.length);
 
     return {
       id: team.id,
@@ -67,6 +74,7 @@ export function buildTeamViews(
       track: team.track,
       lead_id: team.lead_id,
       members,
+      guests: team.team_guests,
       required,
       covered,
       missing,
