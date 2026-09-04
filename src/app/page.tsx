@@ -24,7 +24,7 @@ export default function Home() {
     <>
       <header className="flex items-center justify-between px-6 py-5 sm:px-10">
         <Link href="/" className="font-heading text-lg font-bold tracking-tight">
-          <span className="text-acm-300">ACM</span> Chapter
+          <span className="text-acm-300">ACM</span> PDEU
         </Link>
         <nav className="flex items-center gap-2">
           <Button asChild variant="ghost" size="sm">
@@ -41,7 +41,7 @@ export default function Home() {
           <div className="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.05fr_1fr]">
             <div>
               <p className="font-mono text-xs tracking-[0.2em] text-acm-300 uppercase">
-                ACM Student Chapter
+                ACM PDEU · Student Chapter
               </p>
 
               <h1 className="mt-5 font-heading text-4xl leading-[1.04] font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
@@ -101,8 +101,18 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-white/8 px-6 py-8 text-sm text-muted-foreground sm:px-10">
-        <div className="mx-auto max-w-6xl">
-          Internal tool for the ACM student chapter committee.
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
+          <p>Internal tool for the ACM PDEU student chapter committee.</p>
+          {/* The page exists to get someone signed in, so the last thing on it
+              should be a way in rather than a full stop. */}
+          <nav className="flex items-center gap-2">
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/login">Sign in</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/signup">Create profile</Link>
+            </Button>
+          </nav>
         </div>
       </footer>
     </>

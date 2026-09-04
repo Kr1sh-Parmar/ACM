@@ -22,11 +22,11 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "ACM Chapter",
-    template: "%s · ACM Chapter",
+    default: "ACM PDEU",
+    template: "%s · ACM PDEU",
   },
   description:
-    "The ACM student chapter's committee hub — member directory, skills, and hackathon team building.",
+    "The ACM PDEU student chapter's committee hub — member directory, skills, and hackathon team building.",
 };
 
 export default function RootLayout({

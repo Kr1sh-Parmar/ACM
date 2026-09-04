@@ -45,7 +45,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             href="/dashboard"
             className="shrink-0 font-heading text-base font-bold tracking-tight"
           >
-            <span className="text-acm-300">ACM</span> Chapter
+            <span className="text-acm-300">ACM</span> PDEU
           </Link>
 
           <AppNav id="primary" links={links} />

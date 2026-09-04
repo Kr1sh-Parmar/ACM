@@ -182,7 +182,9 @@ export default async function TeamPage({
 
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-2 font-medium">
-                  {member.full_name}
+                  <Link href={`/directory/${member.id}`} className="hover:underline">
+                    {member.full_name}
+                  </Link>
                   {member.id === view.lead_id && (
                     <Badge variant="outline" className="gap-1 text-xs">
                       <Crown className="size-3" aria-hidden />
@@ -298,7 +300,11 @@ export default async function TeamPage({
                   className="size-9 ring-1 ring-white/15"
                 />
                 <div className="min-w-0">
-                  <p className="truncate font-medium">{person.full_name}</p>
+                  <p className="truncate font-medium">
+                    <Link href={`/directory/${person.id}`} className="hover:underline">
+                      {person.full_name}
+                    </Link>
+                  </p>
                   <ul className="mt-1 flex flex-wrap gap-1">
                     {person.matches.map((skill) => (
                       <li key={skill} className="slot slot-open h-6 px-2 text-[11px]">

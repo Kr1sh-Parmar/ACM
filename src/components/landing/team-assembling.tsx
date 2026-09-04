@@ -10,21 +10,25 @@ import { Check, Plus } from "lucide-react";
  */
 
 const SLOTS = [
-  { skill: "React", who: "Aditi" },
-  { skill: "Figma", who: "Rohan" },
-  { skill: "Python / ML", who: "Sana" },
-  { skill: "Postgres", who: "Vikram" },
+  { skill: "AI/ML developer", who: "Krish Parmar" },
+  { skill: "Backend developer", who: "Varshil" },
+  { skill: "Frontend developer", who: "Maitree Mistry" },
+  { skill: "Cybersecurity", who: "Payas Vaishnav" },
 ];
 
 const FILLED_FROM_START = 2;
+
+// Role and name sit side by side, but "Frontend developer" + "Maitree Mistry"
+// stops fitting on one line below ~420px. Under that the row stacks — every
+// row, so the heights stay even — rather than truncating a person's name.
 
 export function TeamAssembling() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="glass rim relative w-full max-w-md rounded-2xl p-6 shadow-glow-lg">
+    <div className="glass rim relative w-full max-w-lg rounded-2xl p-6 shadow-glow-lg">
       <div className="flex items-baseline justify-between">
-        <h2 className="font-heading text-base font-semibold">Team Northstar</h2>
+        <h2 className="font-heading text-base font-semibold">Team ZERO BIAS</h2>
         <span className="font-mono text-xs text-muted-foreground">Hack the Campus</span>
       </div>
 
@@ -36,7 +40,7 @@ export function TeamAssembling() {
           return (
             <li key={slot.skill}>
               <motion.div
-                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/3 px-3 py-2"
+                className="flex flex-col items-start gap-1.5 rounded-xl border border-white/10 bg-white/3 px-2.5 py-2 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between min-[420px]:gap-3 sm:px-3"
                 initial={
                   reduceMotion || startsFilled
                     ? false
@@ -48,10 +52,12 @@ export function TeamAssembling() {
                   duration: 0.4,
                 }}
               >
-                <span className="font-mono text-sm">{slot.skill}</span>
+                <span className="font-mono text-xs sm:text-sm">
+                  {slot.skill}
+                </span>
 
                 <motion.span
-                  className="slot slot-filled"
+                  className="slot slot-filled shrink-0"
                   initial={reduceMotion || startsFilled ? false : { scale: 0.7, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{
@@ -69,9 +75,11 @@ export function TeamAssembling() {
           );
         })}
 
-        <li className="flex items-center justify-between rounded-xl border border-dashed border-jasmine/35 px-3 py-2">
-          <span className="font-mono text-sm text-jasmine">Open slot</span>
-          <span className="slot slot-open">
+        <li className="flex flex-col items-start gap-1.5 rounded-xl border border-dashed border-jasmine/35 px-2.5 py-2 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between min-[420px]:gap-3 sm:px-3">
+          <span className="font-mono text-xs text-jasmine sm:text-sm">
+            Open slot
+          </span>
+          <span className="slot slot-open shrink-0">
             <Plus className="size-3" aria-hidden />
             asking to join
           </span>

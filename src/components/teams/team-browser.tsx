@@ -183,11 +183,25 @@ export function TeamBrowser({
 
                 <div className="mt-5 flex items-center justify-between gap-3 pt-1">
                   <ul className="flex -space-x-2">
-                    {[...team.members, ...team.guests].slice(0, 5).map((member) => (
+                    {team.members.slice(0, 5).map((member) => (
                       <li key={member.id} title={member.full_name}>
+                        <Link href={`/directory/${member.id}`} className="block">
+                          <MemberAvatar
+                            id={member.id}
+                            name={member.full_name}
+                            className="size-7 border-2 border-card"
+                          />
+                        </Link>
+                      </li>
+                    ))}
+
+                    {/* Guests fill the rest of the stack, up to the same five.
+                        No profile behind them, so nothing to link to. */}
+                    {team.guests.slice(0, Math.max(0, 5 - team.members.length)).map((guest) => (
+                      <li key={guest.id} title={guest.full_name}>
                         <MemberAvatar
-                          id={member.id}
-                          name={member.full_name}
+                          id={guest.id}
+                          name={guest.full_name}
                           className="size-7 border-2 border-card"
                         />
                       </li>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import Link from "next/link";
 import { MemberAvatar } from "@/components/shell/member-avatar";
 import { Check, Inbox, X } from "lucide-react";
 import { toast } from "sonner";
@@ -65,7 +66,11 @@ export function JoinRequestList({
           />
 
           <div className="min-w-0 flex-1">
-            <p className="font-medium">{request.requester.full_name}</p>
+            <p className="font-medium">
+              <Link href={`/directory/${request.requester.id}`} className="hover:underline">
+                {request.requester.full_name}
+              </Link>
+            </p>
             {request.message && (
               <p className="mt-1 text-sm text-muted-foreground">{request.message}</p>
             )}

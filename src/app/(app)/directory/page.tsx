@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { MemberAvatar } from "@/components/shell/member-avatar";
 import { SearchX } from "lucide-react";
 import { requireApproved } from "@/lib/auth";
@@ -129,56 +130,61 @@ export default async function DirectoryPage({
                 );
 
                 return (
-                  <li className="glass rim rounded-2xl p-5 shadow-glow-md" key={member.id}>
-                    <div className="flex items-start gap-3">
-                      <MemberAvatar
-                        id={member.id}
-                        name={member.full_name}
-                        className="size-11 ring-1 ring-white/15"
-                      />
+                  <li key={member.id}>
+                    <Link
+                      href={`/directory/${member.id}`}
+                      className="glass rim block rounded-2xl p-5 shadow-glow-md transition-colors hover:bg-surface-2"
+                    >
+                      <div className="flex items-start gap-3">
+                        <MemberAvatar
+                          id={member.id}
+                          name={member.full_name}
+                          className="size-11 ring-1 ring-white/15"
+                        />
 
-                      <div className="min-w-0 flex-1">
-                        <h2 className="font-heading leading-tight font-semibold">
-                          {member.full_name}
-                        </h2>
-                        <p className="text-sm text-muted-foreground">
-                          {roleLabel(member.designation, member.department)}
-                        </p>
-                        <p className="mt-0.5 font-mono text-xs text-muted-foreground">
-                          {member.branch ?? "—"}
-                          {member.year ? ` · ${YEAR_LABEL[member.year]} year` : ""}
-                        </p>
+                        <div className="min-w-0 flex-1">
+                          <h2 className="font-heading leading-tight font-semibold">
+                            {member.full_name}
+                          </h2>
+                          <p className="text-sm text-muted-foreground">
+                            {roleLabel(member.designation, member.department)}
+                          </p>
+                          <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                            {member.branch ?? "—"}
+                            {member.year ? ` · ${YEAR_LABEL[member.year]} year` : ""}
+                          </p>
+                        </div>
+
+                        {member.open_to_invites && (
+                          <Badge className="shrink-0">Available</Badge>
+                        )}
                       </div>
 
-                      {member.open_to_invites && (
-                        <Badge className="shrink-0">Available</Badge>
+                      {member.bio && (
+                        <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">
+                          {member.bio}
+                        </p>
                       )}
-                    </div>
 
-                    {member.bio && (
-                      <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">
-                        {member.bio}
-                      </p>
-                    )}
-
-                    {skills.length > 0 && (
-                      <ul className="mt-4 flex flex-wrap gap-1.5">
-                        {skills.slice(0, 6).map((skill) => (
-                          <li
-                            key={skill.name}
-                            className="rounded-full border border-white/12 bg-white/4 px-2.5 py-0.5 font-mono text-xs"
-                            title={skill.proficiency}
-                          >
-                            {skill.name}
-                          </li>
-                        ))}
-                        {skills.length > 6 && (
-                          <li className="px-1 py-0.5 font-mono text-xs text-muted-foreground">
-                            +{skills.length - 6}
-                          </li>
-                        )}
-                      </ul>
-                    )}
+                      {skills.length > 0 && (
+                        <ul className="mt-4 flex flex-wrap gap-1.5">
+                          {skills.slice(0, 6).map((skill) => (
+                            <li
+                              key={skill.name}
+                              className="rounded-full border border-white/12 bg-white/4 px-2.5 py-0.5 font-mono text-xs"
+                              title={skill.proficiency}
+                            >
+                              {skill.name}
+                            </li>
+                          ))}
+                          {skills.length > 6 && (
+                            <li className="px-1 py-0.5 font-mono text-xs text-muted-foreground">
+                              +{skills.length - 6}
+                            </li>
+                          )}
+                        </ul>
+                      )}
+                    </Link>
                   </li>
                 );
               })}
